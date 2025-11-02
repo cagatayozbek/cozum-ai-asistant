@@ -1,0 +1,426 @@
+[
+    {
+        "id": "ortaokul-00",
+        "level": "ortaokul",
+        "title": "Ders Programı",
+        "question": "Ortaokulda haftalık ders programı nasıldır?",
+        "answer_type": "table",
+        "embedding_hint": "ortaokul ders saatleri, haftalık ders çizelgesi, 5 6 7 8. sınıf programı, İngilizce, Türkçe, Fen, Matematik",
+        "content": "**Çözüm Koleji Ortaokul Haftalık Ders Programı**\n\nÇözüm Koleji Ortaokulunda 5, 6, 7 ve 8. sınıf düzeylerine özel haftalık ders programları uygulanır. Bu programlar öğrencilerin hem akademik başarılarını hem de sosyal, kültürel ve teknolojik becerilerini geliştirecek şekilde tasarlanmıştır.\n\nProgramda yer alan dersler dört ana grupta toplanabilir:\n\n1. **Temel Akademik Dersler:** Türkçe, Matematik, Fen Bilimleri, Sosyal Bilgiler\n2. **Yabancı Dil Eğitimi:** İngilizce (Main Course), Think & Talk, İkinci Yabancı Dil (Almanca/Arapça)\n3. **Kültürel & Sanatsal Gelişim:** Müzik, Görsel Sanatlar, Öğrenci Kulüpleri\n4. **Teknoloji & Rehberlik:** STEM & Coding, EDUxlab Programı, Rehberlik\n\nAyrıca Kur’an-ı Kerim ve Din Kültürü dersleri, Beden Eğitimi ve çeşitli seçmeli kulüp dersleriyle öğrencilerin çok yönlü gelişimi desteklenmektedir.\n\nAşağıda her sınıf seviyesine göre haftalık ders saatlerini görebilirsiniz:\n\n### 📘 5. Sınıf\n\n| Ders | Saat |\n|------|------|\n| İngilizce (Main Course) | 12 |\n| Think & Talk | 2 |\n| Ortaokul Türkçe | 5 |\n| Ortaokul Matematik | 4 |\n| Ortaokul Fen Bilimleri | 4 |\n| Ortaokul Sosyal Bilgiler | 3 |\n| Kur’an-ı Kerim + Din Kültürü | 4 |\n| Beden Eğitimi | 2 |\n| Müzik | 1 |\n| Görsel Sanatlar | 1 |\n| İkinci Yabancı Dil (Almanca/Arapça) | 2 |\n| Öğrenci Kulüpleri (Seçmeli) | 2 |\n| STEM & Coding | 1 |\n| EDUxlab Programı | Z |\n| Rehberlik | - |\n\n### 📗 6. Sınıf\n\n(Saatler 5. sınıf ile aynıdır)\n\n### 📙 7. Sınıf\n\n(Saatler 5. sınıf ile aynıdır)\n\n### 📕 8. Sınıf\n\n| Ders | Saat |\n|------|------|\n| İngilizce (Main Course) | 4 |\n| Think & Talk | 2 |\n| Ortaokul Türkçe | 10 |\n| Ortaokul Matematik | 10 |\n| Ortaokul Fen Bilimleri | 10 |\n| Ortaokul Sosyal Bilgiler | 4 |\n| Kur’an-ı Kerim + Din Kültürü | 2 |\n| Beden Eğitimi | 2 |\n| Müzik | 1 |\n| Görsel Sanatlar | 1 |\n| İkinci Yabancı Dil (Almanca/Arapça) | 2 |\n| Öğrenci Kulüpleri (Seçmeli) | 2 |\n| STEM & Coding | - |\n| EDUxlab Programı | Z |\n| Rehberlik | 1 |\n\n**Not:** *Z ile belirtilen EDUxlab Programı, proje bazlı yürütüldüğü için sabit saatle tanımlanmamıştır.*",
+        "source": "Ortakokul.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "haftalık ders saati",
+            "ortaokul",
+            "program",
+            "sınıf bazlı",
+            "ders çizelgesi",
+            "tablo"
+        ],
+        "version": "2025-10",
+        "chunk_index": 0
+    },
+    {
+        "id": "ortaokul-01",
+        "level": "ortaokul",
+        "title": "Ders Saatleri ve Etüt",
+        "question": "Ortaokulda günlük ders ve etüt saatleri nedir?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul ders saatleri, etüt saati, sabah kaçta başlıyor, okul saatleri",
+        "content": "Çözüm Koleji Ortaokulunda dersler sabah 09.00’da başlar ve 16.30’da sona erer. 16.30 ile 18.00 saatleri arasında ise etüt uygulaması yapılmaktadır.",
+        "source": "ortaokul.program.tablosu.png",
+        "tags": [
+            "günlük program",
+            "ders saati",
+            "etüt saati",
+            "ortaokul",
+            "mesai"
+        ],
+        "version": "2025-10",
+        "chunk_index": 1
+    },
+    {
+        "id": "ortaokul-02",
+        "level": "ortaokul",
+        "title": "Türkiye Yüzyılı Maarif Modeli ve Eğitim Yaklaşımı",
+        "question": "Çözüm Koleji ortaokulda hangi öğretim modelini uygulamaktadır?",
+        "answer_type": "informational",
+        "embedding_hint": "MEB 2023 vizyon belgesi, Türkiye Yüzyılı Maarif Modeli, disiplinler arası yaklaşım, STEAM, tam öğrenme",
+        "content": "2024-2025 eğitim öğretim yılı itibarıyla 5. sınıf seviyesinde Türkiye Yüzyılı Maarif Modeli öğretim programı uygulanmaya başlanmıştır. 2025-2026 eğitim öğretim yılından itibaren, 5. ve 6. sınıf seviyelerinde uygulanacaktır. Bu model kapsamında, akademik dersler disiplinler arası bir yaklaşımla planlanmakta ve öğrencilerimizin bütünsel gelişimi hedeflenmektedir. Planlamalar, STEAM (Bilim, Teknoloji, Mühendislik, Sanat ve Matematik) yaklaşımı doğrultusunda gerçekleştirilmektedir.\n\nTam öğrenme modeline uygun olarak, öğrencilerin eksik kaldığı konular tekrar dersleri ve etütlerle desteklenerek öğrenme sürecinin eksiksiz tamamlanması sağlanmaktadır.\n\nÇözüm Koleji Ortaokulu öğretmenlerin, öğrencilerin ve velilerin rollerinin birlikte şekillendiği, öğretmenlerin sınıfta öğretmen olmak yerine öğrenmeyi kolaylaştırıcı, öğrenmeyi yönlendirici olduğu bir yaklaşıma sahiptir.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "maarif modeli",
+            "2024 müfredat",
+            "STEAM",
+            "tam öğrenme",
+            "disiplinler arası",
+            "MEB vizyon"
+        ],
+        "version": "2025-10",
+        "chunk_index": 2
+    },
+    {
+        "id": "ortaokul-03",
+        "level": "ortaokul",
+        "title": "Türkçe Dersi Uygulamaları",
+        "question": "Ortaokul Türkçe dersleri Çözüm Koleji'nde nasıl işlenmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "Türkçe dersi, kitap okuma, yazar atölyesi, etkinlik temelli öğrenme, görsel materyal",
+        "content": "Örneğin, Çözüm Koleji'nde Türkçe dersleri, çeşitli etkinliklerle daha eğlenceli ve etkili hâle getirilir. Bu etkinlikler arasında şunlar yer alır:\n• Kitap okuma etkinlikleri düzenlenir ve kitaplardan uyarlanan filmler izlenerek değerlendirme çalışmaları yapılır.\n• Görsel materyaller ve oyunlar hazırlanarak öğrenme süreci desteklenir.\n• “Yazar Atölyesi” öğrenci kulübü aracılığıyla öğrencilerin yazı yazmaya olan ilgileri artırılarak, kendilerini ifade etme ve hayatı yorumlama becerileri geliştirilir.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "Türkçe dersi",
+            "yazar atölyesi",
+            "etkinlik temelli öğrenme",
+            "kitap etkinliği"
+        ],
+        "version": "2025-10",
+        "chunk_index": 3
+    },
+    {
+        "id": "ortaokul-04",
+        "level": "ortaokul",
+        "title": "EDU Değerlendirme Uygulaması",
+        "question": "EDU (Eğitim Değerlendirme Uygulaması) nedir ve nasıl uygulanır?",
+        "answer_type": "informational",
+        "embedding_hint": "EDU, değerlendirme, fen ve matematik, üst düzey beceriler, bireysel rapor",
+        "content": "EDU (Eğitim Değerlendirme Uygulaması): 5 ve 6. sınıflarda Fen bilimleri ve matematik dersleri kapsamında, dönemde bir kez olmak üzere Çözüm’e özgü bir uygulama olan EDU (Eğitim Değerlendirme Uygulaması) gerçekleştirilmektedir. Eğitim Değerlendirme Uygulaması (EDU), öğrencilerimizin eleştirel düşünme, problem çözme, akıl yürütme gibi üst düzey becerilerini ölçmeyi ve bu becerileri hayata geçirmeyi hedeflemektedir. EDU, klasik bir deneme sınavından farklıdır; yalnızca bilgi ölçmenin ötesinde, öğrencilerin analitik düşünme yetilerini ve problem çözme becerilerini ortaya koymalarını sağlar. Bu uygulamanın raporları, öğrencilerin bir üst bilişsel basamağa taşınması için öğrencilere bireysel performans ve proje ödevlendirmeleri yapılmasına rehberlik etmektedir.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "EDU",
+            "değerlendirme",
+            "fen matematik",
+            "analitik düşünme",
+            "üst düzey beceri"
+        ],
+        "version": "2025-10",
+        "chunk_index": 4
+    },
+    {
+        "id": "ortaokul-05",
+        "level": "ortaokul",
+        "title": "LGS Hazırlık Programı",
+        "question": "Çözüm Koleji'nde LGS hazırlık süreci nasıl yürütülmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "LGS hazırlık, mentor öğretmen, deneme sınavı, grup etüt, soru çözümü, 8. sınıf",
+        "content": "LGS Hazırlık Programı: Çözüm Koleji’nde 8. sınıf öğrencilerinin LGS sürecine en verimli şekilde hazırlanmasını sağlamak amacıyla kapsamlı bir hazırlık programı uygulanmaktadır. Bu süreçte öğrencilerin bireysel takibini sağlamak ve akademik gelişimlerini desteklemek için mentorluk sistemi aktif olarak yürütülmektedir.\n• Mentorluk sistemi, ana branş öğretmenleri üzerinden uygulanmakta olup, her mentor öğretmen en fazla 12 öğrenciden sorumlu olacak şekilde planlanmaktadır.\n• Mentor öğretmenler, öğrencileri haftalık olarak takip ederek, eksiklerini belirlemekte ve bir sonraki haftanın hedeflerini oluşturmaktadır.\n• Her hafta düzenli olarak deneme sınavları uygulanmakta, IV. periyottan itibaren bu sınavların sıklığı artırılarak öğrencilerin sınav pratiği desteklenmektedir.\n• Deneme sınavlarının analizleri detaylı şekilde değerlendirilmekte, bu analizler doğrultusunda öğrencilerin ihtiyaçlarına yönelik grup etütleri planlanmaktadır.\n• Öğrencilerin kitap okuma alışkanlıkları kitap listeleri ile takip edilerek, paragraf sorularına ve yeni nesil soru formatlarına uyum sağlamaları hedeflenmektedir.\n• Ana branş dersleri (Türkçe, matematik, fen bilimleri) haftalık 7 saat konu anlatımı + 3 saat soru çözümü olarak uygulanmaktadır.\n• Soru çözümü derslerinde, branş bazında ÜDS (Ünite Değerlendirme Sınavı) uygulanmaktadır.\n• Ara tatillerde öğrencilerimize LGS Soru Çözüm Kampları düzenlenmektedir.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "LGS",
+            "mentorluk",
+            "deneme sınavı",
+            "etüt",
+            "ÜDS",
+            "kitap okuma"
+        ],
+        "version": "2025-10",
+        "chunk_index": 5
+    },
+    {
+        "id": "ortaokul-06",
+        "level": "ortaokul",
+        "title": "LGS Soru Çözüm Kampları",
+        "question": "Çözüm Koleji'nde LGS Soru Çözüm Kampları nasıl uygulanmaktadır?",
+        "answer_type": "informational",
+        "embedding_hint": "LGS kampı, soru çözüm kampı, ara tatil, şehir dışı kamp, sınav pratiği",
+        "content": "LGS Soru Çözüm Kampları: Çözüm Koleji, sömestir ara tatilinde öğrencilerle farklı bir şehirde soru çözüm kampları düzenler. Bu kamplar, öğrencilerin LGS hazırlık süreçlerini daha verimli hâle getirmek için özel olarak planlanır ve uygulanır. Kampta, öğrenciler farklı soru türleriyle karşılaşarak test çözme hızlarını artırır, sınav stratejileri öğrenir ve zaman yönetimi becerilerini geliştirirler. Kampa katılım sağlamayan öğrenciler için uygulamanın aynı tarihlerde okul içerisinde gerçekleştirilmektedir.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "kamp",
+            "LGS",
+            "sınav pratiği",
+            "zaman yönetimi",
+            "soru çözüm"
+        ],
+        "version": "2025-10",
+        "chunk_index": 6
+    },
+    {
+        "id": "ortaokul-07",
+        "level": "ortaokul",
+        "title": "AYSER Okul Dergisi",
+        "question": "Çözüm Koleji'nde AYSER okul dergisi nedir ve nasıl katkı sağlar?",
+        "answer_type": "informational",
+        "embedding_hint": "AYSER dergisi, öğrenci yazıları, edebi gelişim, okul dergisi, özgür ifade",
+        "content": "Okul Dergisi-AYSER: Çözüm Koleji'nde düzenli olarak hazırlanarak yayımlanan AYSER Dergisi, ortaokul öğrencilerinin katkılarıyla zenginleşmektedir. Öğrenciler, bu dergide yazılarıyla düşüncelerini özgürce ifade etme ve edebi becerilerini geliştirme fırsatı bulmaktadır. Bu uygulama ile öğrencilerin yazma yetenekleri desteklenirken, akademik ve sanatsal gelişimlerine de katkı sağlanmaktadır.",
+        "source": "ortaokul.model.vizyon.docx",
+        "tags": [
+            "AYSER",
+            "okul dergisi",
+            "öğrenci yazısı",
+            "edebi gelişim",
+            "özgür ifade"
+        ],
+        "version": "2025-10",
+        "chunk_index": 7
+    },
+    {
+        "id": "ortaokul-08",
+        "level": "ortaokul",
+        "title": "Yabancı Dil Eğitimi Sistemi",
+        "question": "Çözüm Koleji'nde yabancı dil eğitimi nasıl planlanmakta ve uygulanmaktadır?",
+        "answer_type": "informational",
+        "embedding_hint": "yabancı dil ofisi, danışmanlık, ortak sistem, Cem Balçıkanlı, Cambridge yayınları",
+        "content": "Okulumuzda, Çözüm Eğitim Kurumları Genel Merkezi Yabancı Dil Ofisi tarafından uygulanan eğitim sistemi, tüm Türkiye’deki Çözüm Kolejleri ve Çözüm Akademi Okullarında ortak olarak kullanılmaktadır. Bu kapsamda, öğrencilerimize en etkili yabancı dil eğitimini sunmak için, uzman akademik danışmanlık hizmeti almaktayız. Prof. Dr. Cem Balçıkanlı, yabancı dil süreçlerinin uygulanması ve takibi konusunda aktif olarak rol almaktadır.\nİngilizce Ders İçeriği: Ana ders olarak \"Main Course\" derslerinde, dünya çapında kabul görmüş Cambridge Yayınları kullanılmaktadır. Bu yayınlar, öğrencilerimizin dil becerilerini daha verimli ve etkili bir şekilde geliştirmeyi hedeflemektedir.",
+        "source": "ortaokul.yabancidil.program.docx",
+        "tags": [
+            "yabancı dil",
+            "Cambridge yayınları",
+            "Cem Balçıkanlı",
+            "danışmanlık",
+            "eğitim sistemi"
+        ],
+        "version": "2025-10",
+        "chunk_index": 8
+    },
+    {
+        "id": "ortaokul-09",
+        "level": "ortaokul",
+        "title": "Think&Talk Dersleri",
+        "question": "Çözüm Koleji'nde Think&Talk dersleri nasıl yürütülmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "Think&Talk, proje temelli öğrenme, disiplinlerarası İngilizce, aktif öğrenme",
+        "content": "Think& Talk dersleri, Yabancı Dil Ofisi tarafından proje bazlı olarak özenle planlanmaktadır. Bu derslerde, dil sadece bir iletişim aracı olarak değil, kültür, sanat, bilim gibi tüm öğeleriyle birlikte ele alınır. Öğrenciler, hedef dilde dinleyerek, yazarak ve konuşarak etkileşimli bir şekilde aktif öğrenme sürecine katılır. Think& Talk dersleri kapsamında öğrenciler araştırma yapar, sunumlar hazırlar, tartışma aktiviteleri düzenler ve tiyatro çalışmaları gerçekleştirir. Müzik, resim, fen bilimleri, matematik, bilişim teknolojileri, beden eğitimi gibi farklı alanlarda ürünler oluştururken, İngilizceyi aktif bir şekilde kullanırlar.",
+        "source": "ortaokul.yabancidil.program.docx",
+        "tags": [
+            "Think&Talk",
+            "proje temelli öğrenme",
+            "disiplinlerarası",
+            "etkileşimli ders",
+            "İngilizce"
+        ],
+        "version": "2025-10",
+        "chunk_index": 9
+    },
+    {
+        "id": "ortaokul-10",
+        "level": "ortaokul",
+        "title": "İkinci Yabancı Dil ve Bildirimler",
+        "question": "Çözüm Koleji'nde ikinci yabancı dil eğitimi ve veli bilgilendirme süreci nasıldır?",
+        "answer_type": "informational",
+        "embedding_hint": "ikinci yabancı dil, Almanca, Arapça, K12Net, WhatsApp veli grubu",
+        "content": "Okulumuzda 4. sınıftan başlayarak 11. sınıfa kadar devam eden ikinci yabancı dil dersleri verilmektedir. Öğrencilerimiz kendi istekleri doğrultusunda Almanca ya da Arapça derslerinden birini seçmektedir ve o alanda ilerlemektedir. İngilizce ve ikinci yabancı dil dersi kapsamında ödev ve bilgilendirmeler, K12Net sistemi ve WhatsApp veli grupları üzerinden düzenli olarak paylaşılmaktadır.",
+        "source": "ortaokul.yabancidil.program.docx",
+        "tags": [
+            "ikinci yabancı dil",
+            "Almanca",
+            "Arapça",
+            "K12Net",
+            "veli iletişimi"
+        ],
+        "version": "2025-10",
+        "chunk_index": 10
+    },
+    {
+        "id": "ortaokul-11",
+        "level": "ortaokul",
+        "title": "CARE Sınavları",
+        "question": "Çözüm Koleji'nde uygulanan CARE sınavları nedir ve nasıl işler?",
+        "answer_type": "informational",
+        "embedding_hint": "CARE sınavı, dil değerlendirme, diagnostic, midterm, final, English Lab",
+        "content": "CARE Sınavları: Ortaokul öğrencilerine yılda 3 kez olmak üzere, Genel Merkez Yabancı Dil Ofisi tarafından hazırlanan CARE sınavları uygulanır. Bu sınavlar, iletişimsel dil öğretimi ölçütlerine mümkün olduğunca uygun bir şekilde hazırlanır.\n1. CARE DIAGNOSTIC TEST: Öğrencilerin hazır bulunuşluklarını ölçer ve öğretmenlere sene başında öğrencilerin dil seviyeleri hakkında ön bilgi verir. Sınav sonuçları değerlendirildikten sonra, öğretmenler ve yöneticiler gerekli gördükleri durumlarda “After School English Lab” (Destek eğitim programı) planlayabilirler.\n2. CARE MIDTERM: 1. dönemin sonunda uygulanır ve öğrencilerin dil seviyelerinin gelişimi gözlemlenir.\n3. CARE FINAL: CARE Final sınavı mayıs ayında uygulanır ve öğrencilerin sene sonu dil seviyeleri belirlenir. Öğrencilere seviyelerine uygun sertifika verilir.",
+        "source": "ortaokul.yabancidil.program.docx",
+        "tags": [
+            "CARE",
+            "diagnostic test",
+            "midterm",
+            "final",
+            "English Lab",
+            "sertifika"
+        ],
+        "version": "2025-10",
+        "chunk_index": 11
+    },
+    {
+        "id": "ortaokul-12",
+        "level": "ortaokul",
+        "title": "İngilizce Ders Saatleri ve Platform",
+        "question": "Çözüm Koleji ortaokulunda İngilizce dersleri haftada kaç saattir ve hangi dijital platformlar kullanılmaktadır?",
+        "answer_type": "informational",
+        "embedding_hint": "İngilizce ders saati, Main Course, Think&Talk, BookR platformu",
+        "content": "Ortaokul İngilizce Ders Saatleri\nOrtaokul\tMain Course\tThink&Talk\n5, 6, 7. Sınıf\t12\t2\n8. Sınıf\t4\t2\n\nOrtaokulda Kullanılan Dijital Platform: BookR online kitap okuma platformu kullanılmaktadır.",
+        "source": "ortaokul.yabancidil.program.docx",
+        "tags": [
+            "İngilizce",
+            "ders saati",
+            "BookR",
+            "Main Course",
+            "Think&Talk"
+        ],
+        "version": "2025-10",
+        "chunk_index": 12
+    },
+    {
+        "id": "ortaokul-13",
+        "level": "ortaokul",
+        "title": "Değerler Eğitimi ve Erdemliler Topluluğu",
+        "question": "Çözüm Koleji ortaokulunda manevi eğitim ve değerler eğitimi nasıl uygulanmaktadır?",
+        "answer_type": "informational",
+        "embedding_hint": "manevi eğitim, değerler, Kur’an-ı Kerim, Erdemliler topluluğu, milli değerler",
+        "content": "Çözüm Koleji'nde manevi eğitim, öğrencilerin bilişsel, duygusal ve sosyal gelişimlerini dikkate alarak pedagojik açıdan uygun yöntemlerle sunulur. Ailelerin ve öğrencilerin dış kaynaklara yönelmelerini engellemek amacıyla, öğrencinin ilgi ve ihtiyaçlarına uygun bir ortamda, uzman eğitimciler eşliğinde manevi eğitimin verilmesi büyük önem taşımaktadır. Bu süreçte, manevi eğitim, alanında uzman eğitimciler tarafından yürütülür ve öğrencilerin dini ve manevi değerlerle tanışmaları sağlanır.\nOkulumuzda, Kur’an-ı Kerim derslerinde öğrenciler seviyelerine uygun bir eğitim planlaması için 2 gruba (başlangıç ve ileri seviye) ayrılmaktadır. Dersler; 5. Sınıflarda 2 saat, 6. Sınıflarda 1 saat, 7. Sınıflarda 2 saat olarak gerçekleştirilmektedir.\nAyrıca ortaokul kademesinde ortaokul öğrencilerinin gönüllü katılımı ile Erdemliler Topluluğu faaliyetleri düzenlenmektedir. Erdemliler topluluğu faaliyetleri kapsamında öğrencilerin, milli ve manevi değerleri içselleştirmesi, sosyal sorumluluk bilinci kazanması, sivil toplum kuruluşlarıyla iş birliği içinde çeşitli projelerde yer alması hedeflenmektedir. Topluluğa katılım sağlayan öğrenciler ile bu doğrultuda sosyal, kültürel ve sportif etkinlikler organize edilmektedir.",
+        "source": "ortaokul.manevi.egitim.docx",
+        "tags": [
+            "manevi eğitim",
+            "Kur’an-ı Kerim",
+            "değerler",
+            "erdemliler topluluğu",
+            "sosyal sorumluluk"
+        ],
+        "version": "2025-10",
+        "chunk_index": 13
+    },
+    {
+        "id": "ortaokul-14",
+        "level": "ortaokul",
+        "title": "EDUxLab Atölye Programı",
+        "question": "Çözüm Koleji ortaokulunda EDUxLab atölye programı nasıl yapılandırılmıştır?",
+        "answer_type": "informational",
+        "embedding_hint": "EDUxLab, atölye programı, periyot, mühendislik, sanat, sertifika, K12Net",
+        "content": "EDUxLab atölye programı kapsamında ortaokul kademesinde 5, 6 ve 7. sınıf öğrencilerine yönelik her biri yaklaşık 9 hafta süren toplam 4 periyotluk bir program uygulanmaktadır. Programdaki içerikler şu şekildedir:\n\n5. Sınıf:\n- 1. Periyot: Genç Mühendisler: Keşfet\n- 2. Periyot: Veri Bilimi\n- 3. Periyot: Ahşap Tasarım II\n- 4. Periyot: Doğadan Mutfağa: Biyomimikri\n\n6. Sınıf:\n- 1. Periyot: Makine Öğrenimi (Scratch)\n- 2. Periyot: Sürdürülebilir Sanat II\n- 3. Periyot: Genç Mühendisler: Tasarla & İnovasyon\n- 4. Periyot: Doğadan Mutfağa: Biyoplastik\n\n7. Sınıf:\n- 1. Periyot: Doğadan Mutfağa: Sürdürülebilir Mutfak\n- 2. Periyot: Seramik Sanatı I\n- 3. Periyot: Genç Yapay Zekâ Laboratuvarı\n- 4. Periyot: Genç Mühendisler: Meydan Okuma\n\n“Bir çocuk yetişir, gelecek değişir” sloganı ile öğrencilerimizin çok yönlü bireyler olarak kendilerini yetiştirmesini önemsemekteyiz. Okulumuza özgü tasarlanan EDUxLab atölye programı doğrultusunda yürütülen çalışmalar bu nedenle oldukça önemlidir. EDUxLab'ın temelinde, öğrenmeyi gerçek dünya bağlamlarına oturtan ve öğrenciyi merkeze alan bir yaklaşım bulunmaktadır. Bu yaklaşım, öğrencilerin disiplinlerarası projeler aracılığıyla anlam oluşturduğu, bilgiyi pasif bir şekilde almak yerine aktif olarak inşa ettiği bir öğrenme ekosistemi tasavvur eder. Bu ekosistem, geleneksel sınıf duvarlarını aşarak okulu, toplumu ve endüstriyi bir “öğrenme laboratuvarına” dönüştürmeyi amaçlar.\n\nEDUxLab atölye programı kapsamında öğrencilerimizin Mühendislik, Bilim, Teknoloji ve Sanat ana başlıkları altında farklı disiplinlere ait bilgi ve becerileri edinmesi temel hedefimizdir. Sarmal program tasarımı ile kurgulanan, periyotlu yapıya sahip program, yıl içerisinde dört dönem halinde yürütülmektedir. Bu sayede öğrencilerin farklı alanları deneyimlemesi sağlanır. Periyotlu yapıda MEB Eğitim-öğretim yılı takvimi esas alınır ve her periyot yaklaşık dokuz hafta sürmektedir. Periyotlara ilişkin diğer detaylar K12Net Ajanda modülü üzerinden paylaşılmaktadır. Ders içeriğine dair bilgilendirme mesajları yine K12Net üzerinden Ekran Mesajı olarak gönderilmektedir. Periyot boyunca edinilen kazanımlara uygun ölçme ve değerlendirme çalışmaları gerçekleştirilir. Ortaokul kademesinde, 70 ve üzerinde puan alan öğrencilerimiz başarı sertifikası almaya hak kazanmaktadır.",
+        "source": "ortaokul.eduxlab.program.docx",
+        "tags": [
+            "EDUxLab",
+            "atölye programı",
+            "periyot",
+            "sertifika",
+            "K12Net",
+            "ortaokul",
+            "5. sınıf",
+            "6. sınıf",
+            "7. sınıf"
+        ],
+        "version": "2025-10",
+        "chunk_index": 14
+    },
+    {
+        "id": "ortaokul-15",
+        "level": "ortaokul",
+        "title": "Öğrenci Kulüpleri (Seçmeli Dersler)",
+        "question": "Çözüm Koleji ortaokulunda öğrenci kulüpleri nasıl uygulanmaktadır, hangi kulüpler vardır?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul öğrenci kulüpleri, seçmeli dersler, kulüp saatleri, robotik, müzik, spor",
+        "content": "Çözüm Koleji’nde, öğrencilerin sorumluluk alarak öz güven kazanmalarını, ilgi alanlarını keşfetmelerini ve bu alanlarda kendilerini geliştirmelerini sağlayan bir okul ortamının oluşturulması ve sürekli olarak yaşatılması hedeflenmektedir. Öğrenci kulüplerinde; bilimsel, sosyal, kültürel, sanatsal ve sportif etkinliklere yönelik çalışmalar yürütülmektedir. Bu kulüpler, öğrencilerin kendi ilgi, merak, yetenek ve yetkinliklerine uygun olarak seçtikleri alanlarda yıl boyunca aktif bir şekilde çalışmalarını desteklemektedir. Öğrencilerin seçimleri doğrultusunda mutlu, üretken bireyler olmalarına büyük bir özen gösterilmektedir. Aynı zamanda, her kulübün etkin ve verimli bir şekilde çalışması, okul çalışma disiplinin temel öncelikleri arasında yer almaktadır. Öğrenci kulüpleri haftada 2 saat olacak şekilde uygulanır, her bir kulüp için aylık ve haftalık ders planları dönem başında hazırlanır.\n\nOrtaokul öğrenci kulüplerinden bazıları şunlardır:\n- FLL Challenge (Robotik Kulübü)\n- Ahşap Boyama (Görsel Sanatlar)\n- Yazar Atölyesi (Türkçe)\n- Çözüm Bilim, İnovasyon ve Tasarım Kulübü (Fen Bilimleri)\n- JMUN - Genç Birleşmiş Milletler Modeli (İngilizce)\n- Spor Kulüpleri (Okçuluk, Futsal, Step-Aerobik)\n- Müzik Kulüpleri (Keman, Piyano, Gitar)\n\n2024-2025 eğitim-öğretim yılında Ankara Çözüm Koleji ortaokulunda aktif olarak faaliyet gösteren, öğrencilerin ilgi ve yeteneklerine göre katılım sağlayabileceği toplam 30 öğrenci kulübü (seçmeli ders) bulunmaktadır.",
+        "source": "ortaokul.ogrenci.kulupleri.docx",
+        "tags": [
+            "kulüp",
+            "seçmeli ders",
+            "ortaokul",
+            "robotik",
+            "spor",
+            "müzik",
+            "sosyal etkinlik",
+            "bilimsel etkinlik"
+        ],
+        "version": "2025-10",
+        "chunk_index": 15
+    },
+    {
+        "id": "ortaokul-16",
+        "level": "ortaokul",
+        "title": "Ortaokulda Sanat Faaliyetleri",
+        "question": "Ortaokulda sanat eğitimi nasıl yürütülmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul sanat eğitimi görsel sanatlar sanat tarihi kompozisyon röprodüksiyon",
+        "content": "Ortaokul düzeyinde sanat eğitimi, öğrencilerin estetik anlayışlarını derinleştirmeyi ve sanatsal bilgi ve becerilerini ileri seviyeye taşımayı amaçlamaktadır. Bu süreçte öğrenciler, çizgi hâkimiyeti kazanarak perspektif çalışmalarına başlarlar. Ayrıca, ulusal ve uluslararası ressamların eserlerinden röprodüksiyon yaparak, sanatın temel kavramları olan kompozisyon kuralları, denge, ritim ve boşluk-doluluk ilişkisini öğrenir ve özgün çalışmalarında uygularlar.\n\nSanat eğitimi kapsamında öğrenciler, sanat tarihi ve sanat akımları ile tanışarak, farklı akımlara ait eserleri analiz edebilme ve sınıflandırma becerisi kazanırlar. Böylece, sanatı sadece teknik bir beceri olarak değil, kültürel ve entelektüel bir disiplin olarak içselleştirirler. Öğrenciler edindikleri bu bilgi ve deneyim sayesinde, ilerleyen süreçte görsel sanatlar alanında bilinçli tercihler yapabilecek düzeyde alan bilgisi edinirler.",
+        "source": "ortaokul.sanat.spor.docx",
+        "tags": [
+            "ortaokul",
+            "sanat eğitimi",
+            "görsel sanatlar",
+            "sanat tarihi",
+            "kompozisyon",
+            "röprodüksiyon"
+        ],
+        "version": "2025-10",
+        "chunk_index": 16
+    },
+    {
+        "id": "ortaokul-17",
+        "level": "ortaokul",
+        "title": "Ortaokulda Spor Faaliyetleri",
+        "question": "Ortaokulda spor faaliyetleri nasıl yürütülmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul spor beden eğitimi periyot yüzme jimnastik basketbol taekwondo futbol",
+        "content": "Çözüm Koleji’nde, beden eğitimi dersleri 9 haftalık periyotlar halinde planlanmaktadır. Yıl boyunca dört farklı spor branşında eğitim gerçekleştirerek öğrencilerin farklı spor dallarında deneyim kazanmasını, yıl sonunda ise kendini en yakın hissettiği branşa yönlenmesini hedefliyoruz. İlkokulu tamamlayan öğrencilerin bireysel gelişimlerini desteklemek amacıyla, onların fiziksel, zihinsel ve sosyal yönlerini güçlendiren sportif programlar oluşturulmaktadır. Amacımız; öğrencilerin ahlaki bütünlük, öz güven, öz disiplin, akıl yürütme becerileri, sosyal yetkinlikler ve estetik duyarlılık kazanmalarına katkı sağlamaktır. Her yaş grubunun kas ve iskelet gelişimini göz önünde bulundurarak; fiziksel gelişimi destekleyici ve aynı zamanda öğrencilerin eğlenerek sosyalleşebileceği, postür bozukluklarını önleyici branşlar seçilmektedir. Çözüm Koleji olarak sporu, yalnızca fiziksel bir aktivite olarak değil, aynı zamanda öğrencilerin bütüncül gelişimini destekleyen bir araç olarak görmekteyiz. Onların sağlıklı, bilinçli ve aktif bireyler olarak yetişmeleri için çalışmalarımıza devam etmekteyiz.\n\nOrtaokul Beden Eğitimi ve Spor Dersi Periyotları:\n- Ortaokul (Kız):\n  1. Periyot: Yüzme\n  2. Periyot: Jimnastik\n  3. Periyot: Voleybol\n  4. Periyot: Basketbol\n- Ortaokul (Erkek):\n  1. Periyot: Futbol\n  2. Periyot: Yüzme\n  3. Periyot: Taekwondo\n  4. Periyot: Basketbol",
+        "source": "ortaokul.sanat.spor.docx",
+        "tags": [
+            "ortaokul",
+            "spor eğitimi",
+            "beden eğitimi",
+            "spor periyotları",
+            "fiziksel gelişim",
+            "yüzme",
+            "jimnastik",
+            "basketbol",
+            "taekwondo",
+            "futbol"
+        ],
+        "version": "2025-10",
+        "chunk_index": 17
+    },
+    {
+        "id": "ortaokul-18",
+        "level": "ortaokul",
+        "title": "Kapsamlı Gelişimsel Rehberlik Sistemi",
+        "question": "Ortaokulda rehberlik hizmetleri nasıl yürütülmektedir?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul rehberlik gelişim gözlem bireysel görüşme test çözüm ajandam etüt seminer veli",
+        "content": "Okulumuzda kapsamlı gelişimsel rehberlik sistemi uygulanmaktadır. Bu sistem kapsamında;\n• Öğrencinin akademik ve psiko-sosyal gelişimleri (girişkenlik, hedefe bilinçli yönelim vb.), aile durumları, tutum ve davranışları, ilgi ve yetenekleri gibi öğrenciye özgü her durumu yakından takip edebilmek amacıyla sınıf öğretmeni tarafından 15 günde bir hazırlanan Gelişim Gözlem Formları rehberlik birimi tarafından incelenerek bireysel rehberlik hizmeti sunulmaktadır.\n• Her periyotta* en az bir kez olmak üzere, öğrenciler ile bireysel görüşmeler gerçekleştirilmekte ve görüşmelerin değerlendirmeleri veliler ile paylaşılmaktadır.\n• Öğrencilerin gelişim dönemi özelliklerine ve ihtiyaçlarına yönelik bireyi tanıma teknikleri kapsamında projektif ve objektif testler** uygulanmaktadır. Testlerin değerlendirilmesi veli ve öğrencilerle gerçekleştirilerek, okul ve aile iş birliği içerisinde öğrencilerin gelişimi desteklenmektedir.\n• Öğrencilerin bireysel gelişimlerini, ilgi ve yeteneklerini, günlük duygu durumlarını ve akademik süreçlerini daha iyi fark edebilmeleri, ayrıca kendilerini bilinçli bir şekilde takip edebilmeleri adına Çözüm Ajandam veya Çözüm Rehberim defterlerini düzenli olarak doldurmaları beklenmektedir. Bu süreç, onların öz farkındalık kazanmalarına, hedeflerini belirlemelerine ve gelişimlerini gözlemlemelerine katkı sağlar. Belirli periyotlarla ajandalar incelenerek öğrencilere bireysel gelişimlerini destekleyici geri bildirimler sunulur.\n• Akademik başarıyı ölçmeye yönelik olarak gerçekleştirilen değerlendirmeler, deneme sınavları, öğretmen görüşleri veya öğrenci talebi ile ihtiyaç görülen konulara ilişkin grup etütleri verilmektedir. İhtiyaç dahilinde öğrencilere okul çıkışlarında soru çözüm saatleri ile destek sağlanmaktadır.\n• Öğrenciler ile aylık olarak sınıf içerisinde rehberlik etkinlikleri gerçekleştirilmekte ve öğrencilerin sosyal rolleri öğreniş biçimleri, olumlu davranış geliştirme, eleştirel düşünme ve problem çözme gibi 21. yy. becerilerini geliştirme süreci takip edilmekte ve desteklenmektedir.\n• Öğrencilerin gelişim dönemi özelliklerine ve ihtiyaçlarına yönelik psikolojik farkındalığı oluşturma ve ebeveyn-çocuk iletişimini desteklemek amacıyla yıl içerisinde velilere yönelik Çözüm Öğrenme Atölyesi düzenlenmektedir. Çözüm Öğrenme Atölyesi kapsamında seminerler, çalıştaylar ve atölyeler planlanmaktadır.\n• Sınava hazırlık sürecinde olan öğrenciler ve öğrencinin velisine yönelik Zaman Yönetimi, Öğrenme Stilleri, Verimli Ders Çalışma Teknikleri, Sınav Öğrencisi Ebeveyni Olmak gibi konularda bilgilendirici ve yol gösterici duyuru, etkinlik veya seminerler düzenlemektedir.\n• Öğrencilerin kendi ilgi, yetenek ve ihtiyaçları doğrultusunda okul içi ve okul dışı sosyal ve kültürel etkinliklere yönelmesine yardımcı olmak amacıyla; meslek tanıtım günleri ve uzmanlar tarafından tecrübe paylaşımları gerçekleştirilmektedir.\n• Okulumuz PDR Birimi, aylık olarak velilerimize yönelik bilgilendirici bültenler hazırlamaktadır. Bu bültenler, ailelerimize rehberlik hizmetleri, gelişimsel öneriler ve okulumuzdaki etkinlikler hakkında önemli bilgiler sunmayı amaçlamaktadır.\n\n*Bir eğitim-öğretim yılında 4 periyot bulunmaktadır.\n\n**Çocuğun kendini nasıl algıladığı, duyguları, ailesi ve çevresi hakkındaki görüşleri ile ilgili bilgi toplamayı amaçlayan değerlendirme gerektiren veya yapılandırılmış testlerdir.",
+        "source": "ortaokul.rehberlik.docx",
+        "tags": [
+            "ortaokul",
+            "rehberlik",
+            "psikolojik danışmanlık",
+            "gelişim gözlem",
+            "bireysel görüşme",
+            "ajanda",
+            "etüt",
+            "veli semineri"
+        ],
+        "version": "2025-10",
+        "chunk_index": 18
+    },
+    {
+        "id": "ortaokul-19",
+        "level": "ortaokul",
+        "title": "Okul-Veli İletişimi",
+        "question": "Ortaokulda veli iletişimi nasıl sağlanıyor?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul veli iletişimi bireysel görüşme mentor K12Net sms whatsapp toplantı",
+        "content": "Öğrencilerimizle ilgili tüm bilgilendirmeler günlük, haftalık ve aylık periyotlarda velilerle düzenli olarak paylaşılmaktadır. Bu süreçte kullanılan iletişim kanalları; K12Net, SMS, WhatsApp bilgilendirme grupları ve telefon aramalarıdır.\n\nÖğrencilerin gelişim süreçlerine yönelik genel bilgilendirmelerin yapıldığı veli toplantıları, her periyotta bir kez olmak üzere genel bilgilendirme veya bireysel görüşme formatında planlanmaktadır. \n\n5, 6 ve 7. sınıf öğrencilerin sınıf rehber öğretmenleri her hafta 1 öğrenci ile ayda 1 veli ile bireysel olarak görüşmektedir. Yapılan görüşmeler bütüncül bir bakış açısıyla öğrencinin her açıdan gözlemlenmesi ve veli ile iş birliği içerisinde öğrencinin desteklenmesini amaçlamaktadır.\n\n8. sınıf öğrencilerinin bireysel takibini sağlayan mentor öğretmenler her hafta öğrenci ile iki haftada 1 veli ile görüşmektedir. Görüşmeler öğrenci, veli ve okul arası iş birliğinin sağlanması ve öğrencinin her alanda desteklenmesini sağlamak amacıyla gerçekleştirilir.",
+        "source": "ortaokul.rehberlik.docx",
+        "tags": [
+            "ortaokul",
+            "veli iletişimi",
+            "mentor öğretmen",
+            "rehber öğretmen",
+            "k12net",
+            "veli toplantısı"
+        ],
+        "version": "2025-10",
+        "chunk_index": 19
+    },
+    {
+        "id": "ortaokul-20",
+        "level": "ortaokul",
+        "title": "Okul İçi ve Dışı Öğrenme Ortamları",
+        "question": "Ortaokulda hangi öğrenme ortamları kullanılıyor?",
+        "answer_type": "informational",
+        "embedding_hint": "ortaokul öğrenme ortamı atölye gezi uzay ahşap seramik mutfak gökbilim meteoroloji",
+        "content": "Ortaokul öğrencilerimizin gelişimlerini desteklemek amacıyla, okul içi öğrenme ortamları, eğitim sürecinde aktif olarak kullanılmaktadır:\n• Okul Sera Alanı\n• Konferans Salonu\n• Mutfak\n• Uzay Havacılık Atölyesi\n• Ahşap Atölyesi\n• Seramik Atölyesi\n• Robotik Kodlama Atölyesi\n\nOrtaokulda, öğrencilerin yıl boyunca gerçekleştireceği geziler, dönem başında belirli gün ve haftalar doğrultusunda planlanmaktadır. Bu geziler arasında Ali Kuşçu Gökbilim Merkezi (7. Sınıf Fen Bilimleri dersi kazanımları kapsamında), Meteoroloji Müzesi (8. sınıfın ilk ünitesi olan \"Mevsimler ve İklim\" kapsamında) gibi eğitimi pekiştiren ortamlar yer alacaktır. Çözüm Koleji’nde, öğrencilerimizin öğrenme deneyimlerini zenginleştirmek adına okul gezileri büyük bir öneme sahiptir ve bu tür etkinlikler öğrencilerimizin gelişimine önemli katkılar sağlamaktadır.",
+        "source": "ortaokul.rehberlik.docx",
+        "tags": [
+            "ortaokul",
+            "öğrenme ortamı",
+            "okul içi",
+            "okul dışı",
+            "robotik",
+            "seramik",
+            "gezi",
+            "fen bilimleri",
+            "gökbilim",
+            "meteoroloji"
+        ],
+        "version": "2025-10",
+        "chunk_index": 20
+    }
+]

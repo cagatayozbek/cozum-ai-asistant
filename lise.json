@@ -1,0 +1,42 @@
+[
+    {
+        "id": "lise-00",
+        "level": "lise",
+        "title": "Ders Programı",
+        "question": "Lisede haftalık ders programı nasıldır?",
+        "answer_type": "table",
+        "embedding_hint": "lise ders saatleri, haftalık ders çizelgesi, 9 10 11 12. sınıf programı, İngilizce, Matematik, Edebiyat",
+        "content": "burdaki verilen bilgiler hatalı düzeltilmesini iste: **Çözüm Koleji Anadolu ve Fen Lisesi Haftalık Ders Programı**\n\nAşağıda 9, 10, 11 ve 12. sınıf düzeyleri için Anadolu ve Fen Lisesi öğrencilerine yönelik haftalık ders saatleri tablo halinde sunulmuştur:\n\n| Ders | 9FEN | 9AND | 10FEN | 10AND | 11FEN | 11AND SAY | 11AND EA | 12SAY | 12EA |\n|------|------|------|-------|--------|--------|------------|------------|--------|-------|\n| EDUxLab Programı | Z | Z | Z | Z | Z | Z | Z | Z | Z |\n| İngilizce (Main Course) | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |\n| Think & Talk | 8 | 8 | 8 | 8 | - | - | - | - | - |\n| Beden Eğitimi | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |\n| Kur’an Kerim + Din Kültürü | 4 | 4 | 4 | 4 | 3 | 3 | 3 | 2 | 2 |\n| Görsel Sanatlar / Müzik | 2 | 2 | 2 | 2 | - | - | - | - | - |\n| 2. Yabancı Dil | 2 | 2 | 2 | 2 | - | - | - | - | - |\n| Öğrenci Kulüpleri | 2 | 2 | 2 | 2 | - | - | - | - | - |\n| Matematik | 6 | 6 | 6 | 6 | 7 | 6 | 5 | 6 | 5 |\n| Geometri | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |\n| Edebiyat | 5 | 5 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |\n| Tarih | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |\n| Coğrafya | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |\n| Felsefe | - | - | - | - | 2 | 2 | 2 | 2 | 2 |\n| Fizik | 2 | 2 | 2 | 2 | 3 | 3 | 1 | 4 | 1 |\n| Kimya | 2 | 2 | 2 | 2 | 3 | 3 | 1 | 4 | 1 |\n| Biyoloji | 2 | 2 | 2 | 2 | 2 | 2 | 1 | 6 | 1 |",
+        "source": "Lise_Haftal_k_Ders_Program_.csv",
+        "tags": [
+            "haftalık ders saati",
+            "lise",
+            "program",
+            "sınıf bazlı",
+            "ders çizelgesi",
+            "tablo"
+        ],
+        "version": "2025-10",
+        "chunk_index": 0
+    },
+    {
+        "id": "lise-01",
+        "level": "lise",
+        "title": "Ders Saatleri",
+        "question": "Lise ders saatleri nedir?",
+        "answer_type": "text",
+        "embedding_hint": "lisede dersler saat kaçta başlıyor, kaçta bitiyor, gün içinde ders saatleri",
+        "content": "• Ders Saatleri: 09.00-16.30",
+        "source": "Lise_Haftal_k_Ders_Program_.csv",
+        "tags": [
+            "ders saatleri",
+            "lise",
+            "başlangıç",
+            "bitiş",
+            "09.00",
+            "16.30"
+        ],
+        "version": "2025-10",
+        "chunk_index": 1
+    }
+]
