@@ -1,0 +1,372 @@
+[
+    {
+        "id": "lise-00",
+        "level": "lise",
+        "title": "Ders Programı",
+        "question": "Lisede haftalık ders programı nasıldır?",
+        "answer_type": "table",
+        "embedding_hint": "lise ders saatleri, haftalık ders çizelgesi, 9 10 11 12. sınıf programı, İngilizce, Matematik, Edebiyat, eduxlab",
+        "content": "**Çözüm Koleji Anadolu ve Fen Lisesi Haftalık Ders Programı**\n\nAşağıda 9, 10, 11 ve 12. sınıf düzeyleri için Anadolu ve Fen Lisesi öğrencilerine yönelik haftalık ders saatleri tablo halinde sunulmuştur (Benzer programlar birleştirilmiştir):\n\n| Ders | 9FEN/AND | 10FEN/AND | 11FEN/SAY | 11AND EA | 12SAY | 12EA |\n|:---|:---:|:---:|:---:|:---:|:---:|:---:|\n| EDUxLab Programı | 2 | 2 | - | - | - | - |\n| İngilizce (Main Course) | 8 | 8 | 4 | 4 | - | - |\n| Think & Talk | 2 | 2 | 2 | 2 | - | - |\n| Beden Eğitimi | 2 | 2 | 2 | 2 | - | - |\n| Kur'anı Kerim + Din Kültürü | 4 | 4 | 3 | 3 | 2 | 3 |\n| Görsel Sanatlar / Müzik | 2 | 2 | - | - | - | - |\n| 2. Yabancı Dil | 2 | 2 | - | - | - | - |\n| Öğrenci Kulüpleri | 2 | 2 | 2 | 2 | - | - |\n| Matematik | 6 | 6 | 8 | 8 | 12 | 13 |\n| Geometri | - | - | 2 | 2 | 5 | 5 |\n| Edebiyat | 5 | 4 | 4 | 10 | 4 | 10 |\n| Tarih | 2 | 2 | 2 | 5 | 1 | 4 |\n| Coğrafya | 2 | 2 | - | 5 | 1 | 5 |\n| Felsefe | - | 1 | 1 | 2 | 1 | 2 |\n| Fizik | 2 | 2 | 5 | - | 7 | 1 |\n| Kimya | 2 | 2 | 5 | - | 6 | 1 |\n| Biyoloji | 2 | 2 | 5 | - | 6 | 1 |",
+        "source": "Lise_Haftal_k_Ders_Program_.csv",
+        "tags": [
+            "haftalık ders saati",
+            "lise",
+            "program",
+            "sınıf bazlı",
+            "ders çizelgesi",
+            "tablo",
+            "fen lisesi",
+            "anadolu lisesi"
+        ],
+        "version": "2025-10-Rev3",
+        "chunk_index": 0
+    },
+    {
+        "id": "lise-01",
+        "level": "lise",
+        "title": "Ders Saatleri",
+        "question": "Lise ders saatleri nedir?",
+        "answer_type": "text",
+        "embedding_hint": "lisede dersler saat kaçta başlıyor, kaçta bitiyor, gün içinde ders saatleri",
+        "content": "• Ders Saatleri: 09.00-16.30",
+        "source": "Lise_Haftal_k_Ders_Program_.csv",
+        "tags": [
+            "ders saatleri",
+            "lise",
+            "başlangıç",
+            "bitiş",
+            "09.00",
+            "16.30"
+        ],
+        "version": "2025-10",
+        "chunk_index": 1
+    },
+    {
+        "id": "lise-02",
+        "level": "lise",
+        "title": "Maarif Modeli ve Uygulanan Programlar",
+        "question": "Lise seviyesinde hangi öğretim modeli ve programlar uygulanmaktadır?",
+        "answer_type": "paragraph",
+        "embedding_hint": "maarif modeli, lise öğretim modeli, tam öğrenme modeli, steam, EDU uygulaması, eğitim değerlendirme uygulaması",
+        "content": "**Maarif Modeli ve Uygulanan Programlar**\n\nÇözüm Koleji Anadolu ve Fen Lisesi'nin temel amacı, öğrencileri 21. yüzyıl becerileriyle donatarak akademik, sosyal ve bireysel gelişimlerini en üst düzeye çıkarmaktır. Öğrencilerin mutlu, kendini ifade edebilen, öz güvenli, değerlerine sahip çıkan, lider ruhlu ve etkili iletişim kurabilen bireyler olarak yetişmesi hedeflenmektedir.\n\n2024-2025 eğitim-öğretim yılı itibarıyla 9. sınıflarda Türkiye Yüzyılı Maarif Modeli uygulanmaya başlanmış, 2025-2026 itibarıyla 9. ve 10. sınıflarda yaygınlaştırılacaktır. Bu model kapsamında akademik dersler disiplinler arası şekilde planlanmakta ve STEAM (Bilim, Teknoloji, Mühendislik, Sanat, Matematik) yaklaşımı esas alınmaktadır. Öğrenme süreci, tam öğrenme modeline uygun biçimde tekrar dersleri ve etütlerle desteklenmektedir.\n\nAyrıca, 9 ve 10. sınıflarda Matematik ve Fen dersleri için dönemlik olarak uygulanan EDU (Eğitim Değerlendirme Uygulaması) ile öğrencilerin üst düzey becerileri ölçülür. EDU, sadece bilgi ölçmeye değil, eleştirel düşünme, problem çözme ve akıl yürütme becerilerinin uygulanmasına da odaklanır. EDU sonuçları, öğrencilere bireysel ödevlendirmeler ve proje planlaması yapılmasında rehberlik eder.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "maarif modeli",
+            "steam",
+            "tam öğrenme",
+            "EDU",
+            "lise",
+            "öğretim programı"
+        ],
+        "version": "2025-10",
+        "chunk_index": 2
+    },
+    {
+        "id": "lise-03",
+        "level": "lise",
+        "title": "YKS Hazırlık Programı ve Soru Çözüm Kampları",
+        "question": "Çözüm Koleji Lisesi'nde YKS hazırlık süreci nasıl yürütülür?",
+        "answer_type": "paragraph",
+        "embedding_hint": "yks hazırlık, deneme sınavı, etüt, mentor öğretmen, tyt ayt denemeleri, soru çözüm kampı, motivasyon gezisi",
+        "content": "**YKS Hazırlık Programı ve Soru Çözüm Kampları**\n\nÇözüm Koleji’nde YKS hazırlık programı, bireysel takip, düzenli ölçme-değerlendirme ve etkili çalışma stratejilerine dayalı olarak uygulanmaktadır. 12. sınıf öğrencileri için mentor öğretmen sistemi yürütülür. Her mentor öğretmen 10 öğrenci ile birebir ilgilenir ve akademik gelişimi haftalık takip eder. Eksikler belirlenip haftalık hedefler oluşturulur.\n\nI. periyotta her hafta 1 TYT denemesi, II. periyottan itibaren her hafta 1 TYT + 1 AYT denemesi yapılır. Sonuçlara göre bireysel ve grup etütleri düzenlenir. Derece gruplarına özel branş denemeleri uygulanır. Dönemde bir kez lise/üniversite ortamında YKS provası yapılır. Sınava 45 gün kala yoğunlaştırılmış deneme serisi uygulanır. Ayrıca, 12. sınıf ve mezun öğrencilerle üniversite ziyaretleri gerçekleştirilir.\n\nYKS Soru Çözüm Kampları ise sömestir tatilinde farklı şehirlerde düzenlenir. Bu kamplar sayesinde öğrenciler soru çözme hızlarını artırır, sınav stratejileri geliştirir ve zaman yönetimini öğrenir. Katılamayan öğrenciler için aynı uygulama okulda gerçekleştirilir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "yks",
+            "mentor öğretmen",
+            "deneme sınavı",
+            "kamp",
+            "motivasyon gezisi",
+            "etüt"
+        ],
+        "version": "2025-10",
+        "chunk_index": 3
+    },
+    {
+        "id": "lise-04",
+        "level": "lise",
+        "title": "İngilizce Eğitimi: Genel Yaklaşım ve Cambridge Yayınları",
+        "question": "Çözüm Koleji'nde İngilizce eğitimi nasıl bir yaklaşımla verilir ve hangi materyaller kullanılır?",
+        "answer_type": "paragraph",
+        "embedding_hint": "ingilizce eğitimi, yabancı dil ofisi, prof. dr. cem balçıkanlı, main course, cambridge yayınları, dilleri konuşturan okul",
+        "content": "İngilizce Eğitimi: Cambridge Yayınları ve Lingua Attack Platformu\nDilleri\nKonuşturan Okul\nOkulumuzda, Çözüm Eğitim Kurumları\nGenel Merkezi Yabancı Dil Ofisi tarafından uygulanan eğitim sistemi, tüm\nTürkiye’deki Çözüm Kolejleri ve Çözüm Akademi Okullarında ortak olarak\nkullanılmaktadır. Bu kapsamda, öğrencilerimize en etkili yabancı dil eğitimini\nsunmak için, uzman akademik danışmanlık hizmeti almaktayız. Prof. Dr. Cem\nBalçıkanlı, yabancı dil süreçlerinin uygulanması ve takibi konusunda aktif\nolarak rol almaktadır.\nİngilizce Ders İçeriği: Ana ders olarak \"Main\nCourse\" derslerinde, dünya çapında kabul görmüş Cambridge Yayınları\nkullanılmaktadır. Bu yayınlar, öğrencilerimizin dil becerilerini daha verimli\nve etkili bir şekilde geliştirmeyi hedeflemektedir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ingilizce",
+            "cambridge",
+            "main course",
+            "cem balçıkanlı",
+            "yabancı dil ofisi"
+        ],
+        "version": "2025-10",
+        "chunk_index": 4
+    },
+    {
+        "id": "lise-05",
+        "level": "lise",
+        "title": "Think& Talk Dersleri",
+        "question": "Think& Talk dersleri nedir ve nasıl işlenir?",
+        "answer_type": "paragraph",
+        "embedding_hint": "think& talk, proje bazlı eğitim, ingilizce sunum, ingilizce tiyatro, interaktif öğrenme, disiplinlerarası",
+        "content": "Think& Talk Dersleri: Think& Talk dersleri,\nYabancı Dil Ofisi tarafından proje bazlı olarak özenle planlanmaktadır. Bu\nderslerde, dil sadece bir iletişim aracı olarak değil, kültür, sanat, bilim\ngibi tüm öğeleriyle birlikte ele alınır. Öğrenciler, hedef dilde dinleyerek,\nyazarak ve konuşarak etkileşimli bir şekilde aktif öğrenme sürecine katılır.\nThink& Talk dersleri kapsamında öğrenciler araştırma yapar, sunumlar\nhazırlar, tartışma aktiviteleri düzenler ve tiyatro çalışmaları gerçekleştirir.\nMüzik, resim, fen bilimleri, matematik, bilişim teknolojileri, beden eğitimi\ngibi farklı alanlarda ürünler oluştururken, İngilizceyi aktif bir şekilde\nkullanırlar.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ingilizce",
+            "think& talk",
+            "proje",
+            "sunum",
+            "etkileşimli öğrenme"
+        ],
+        "version": "2025-10",
+        "chunk_index": 5
+    },
+    {
+        "id": "lise-06",
+        "level": "lise",
+        "title": "İkinci Yabancı Dil Eğitimi",
+        "question": "Okulunuzda ikinci yabancı dil eğitimi veriliyor mu? Seçenekler nelerdir?",
+        "answer_type": "paragraph",
+        "embedding_hint": "ikinci yabancı dil, almanca, arapça, k12net, 4. sınıf, 11. sınıf",
+        "content": "İkinci Yabancı Dil: Okulumuzda 4. sınıftan\nbaşlayarak 11. sınıfa kadar devam eden ikinci yabancı dil dersleri\nverilmektedir. Öğrencilerimiz kendi istekleri doğrutusunda Almanca ya da\nArapça derslerinden birini seçmektedir ve o alanda ilerlemektedir. İngilizce ve\nikinci yabancı dil dersi kapsamında ödev ve bilgilendirmeler, K12Net sistemi ve\nWhatsApp veli grupları üzerinden düzenli olarak paylaşılmaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ikinci yabancı dil",
+            "almanca",
+            "arapça",
+            "k12net"
+        ],
+        "version": "2025-10",
+        "chunk_index": 6
+    },
+    {
+        "id": "lise-07",
+        "level": "lise",
+        "title": "CARE Sınavları (Dil Seviye Tespiti)",
+        "question": "Öğrencilerin İngilizce seviyeleri nasıl ölçülür? CARE sınav sistemi nedir?",
+        "answer_type": "list",
+        "embedding_hint": "care sınavı, p-test, midterm, final, after school english lab, seviye tespit, sertifika, ingilizce kur",
+        "content": "CARE Sınavları: Lise öğrencilerine yılda 3\nkez olmak üzere, Genel Merkez Yabancı Dil Ofisi tarafından hazırlanan CARE\nsınavları uygulanır. Bu sınavlar, iletişimsel dil öğretimi ölçütlerine mümkün\nolduğunca uygun bir şekilde hazırlanır.\n1.      CARE P-TEST: Öğrencilerin hazır bulunuşluklarını\nölçer ve öğretmenlere sene başında öğrencilerin dil seviyeleri hakkında ön\nbilgi verir. Sınav sonuçları değerlendirildikten sonra, öğretmenler ve\nyöneticiler gerekli gördükleri durumlarda “After School English Lab”\n(Destek eğitim programı) planlayabilirler. CARE P-TEST lise öğrencilerine\nuygulandıktan sonra öğrenciler kurlara ayrılır. Öğrenciler her yıl bir üst kura\ngeçerek İngilizce eğitimine devam eder.\n2.      CARE MIDTERM: 1. dönemin sonunda uygulanır ve\nöğrencilerin dil seviyelerinin gelişimi gözlemlenir.\n3.      CARE FINAL: CARE Final sınavı mayıs ayında uygulanır ve öğrencilerin\nsene sonu dil seviyeleri belirlenir. Öğrencilere seviyelerine uygun sertifika\nverilir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ingilizce",
+            "care sınavı",
+            "seviye tespiti",
+            "p-test",
+            "midterm",
+            "final",
+            "sertifika"
+        ],
+        "version": "2025-10",
+        "chunk_index": 7
+    },
+    {
+        "id": "lise-08",
+        "level": "lise",
+        "title": "Lise İngilizce Ders Saatleri ve Lingua Attack Platformu",
+        "question": "Lisede İngilizce ders saatleri nasıldır ve hangi dijital platformlar kullanılır?",
+        "answer_type": "table_and_paragraph",
+        "embedding_hint": "lise ingilizce ders saati, 9. sınıf, 10. sınıf, 11. sınıf, main course, think&talk, lingua attack, online kitap okuma",
+        "content": "Lise İngilizce Ders Saatleri\n\nLise\n\nMain Course\n\nThink&Talk\n\n9\nve 10. Sınıf\n\n8\n\n2\n\n11. Sınıf\n\n4\n\n2\n\nLisede Kullanılan Dijital Platform:\nLingua Attack\nonline kitap okuma platformu kullanılmaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ingilizce",
+            "ders saati",
+            "lise",
+            "lingua attack",
+            "dijital platform"
+        ],
+        "version": "2025-10",
+        "chunk_index": 8
+    },
+    {
+        "id": "lise-08",
+        "level": "lise",
+        "title": "Lise İngilizce Ders Saatleri ve Lingua Attack Platformu",
+        "question": "Lisede İngilizce ders saatleri nasıldır ve hangi dijital platformlar kullanılır?",
+        "answer_type": "table_and_paragraph",
+        "embedding_hint": "lise ingilizce ders saati, 9. sınıf, 10. sınıf, 11. sınıf, main course, think&talk, lingua attack, online kitap okuma",
+        "content": "Lise İngilizce Ders Saatleri\n\n| Lise | Main Course | Think&Talk |\n| :--- | :--- | :--- |\n| 9 ve 10. Sınıf | 8 | 2 |\n| 11. Sınıf | 4 | 2 |\n\nLisede Kullanılan Dijital Platform:\nLingua Attack online kitap okuma platformu kullanılmaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "ingilizce",
+            "ders saati",
+            "lise",
+            "lingua attack",
+            "dijital platform"
+        ],
+        "version": "2025-10",
+        "chunk_index": 8
+    },
+    {
+        "id": "lise-09",
+        "level": "lise",
+        "title": "Manevi Eğitim Uygulamaları (Tümü)",
+        "question": "Lisede manevi eğitim programı (dersler, etkinlikler, topluluklar) neleri içerir?",
+        "answer_type": "paragraph_and_list_and_table",
+        "embedding_hint": "manevi eğitim, değerler eğitimi, erdemliler haftası, kuran-ı kerim, din kültürü ders saati, erdemliler topluluğu, sosyal sorumluluk, değerleri yaşatan okul",
+        "content": "Manevi Eğitim Uygulamaları\nDeğerleri Yaşatan Okul\n\nÇözüm Koleji'nde manevi eğitim, öğrencilerin bilişsel, duygusal ve sosyal gelişimlerini dikkate alarak pedagojik açıdan uygun yöntemlerle sunulur. Ailelerin ve öğrencilerin dış kaynaklara yönelmelerini engellemek amacıyla, öğrencinin ilgi ve ihtiyaçlarına uygun bir ortamda, uzman eğitimciler eşliğinde manevi eğitimin verilmesi büyük önem taşımaktadır. Bu süreçte, manevi eğitim, alanında uzman eğitimciler tarafından yürütülür ve öğrencilerin dini ve manevi değerlerle, tanışmaları sağlanır.\n\nOkulumuzda, Kur’an-ı Kerim derslerinde öğrencilere seviyelerine uygun olacak şekilde bireysel takip gerçekleştirilmektedir. Gerekli durumlarda ders dışı takviye dersler de planlanmaktadır. Manevi eğitime yönelik olarak düzenlenen Erdemliler Haftası kapsamında tiyatro, münazara, konferans ve seminerler gerçekleştirilerek öğrencilerin değerler eğitimi almaları desteklenmektedir. Bu etkinlikler, öğrencilerimizin sosyal ve manevi gelişimlerine katkı sağlamaktadır.\n\n| Sınıf | Din Kültürü ve Ahlak Bilgisi Dersi | Kur’an-ı Kerim Dersi |\n| :--- | :--- | :--- |\n| 9. Sınıf | 2 | 2 |\n| 10. Sınıf | 2 | 2 |\n| 11. Sınıf | 1 | 1 |\n| 12. Sınıf | 1 | - |\n\nAyrıca lise kademesinde lise öğrencilerinin gönüllü katılımı Erdemliler Topluluğu faaliyetleri düzenlenmektedir. Erdemliler topluluğu faaliyetleri kapsamında öğrencilerin,\n\n* Milli ve manevi değerleri içselleştirmesi,\n* Sosyal sorumluluk bilinci kazanması,\n* Sivil toplum kuruluşlarıyla iş birliği içinde çeşitli projelerde yer alması hedeflenmektedir.\n\nTopluluğa katılım sağlayan öğrenciler ile bu doğrultuda sosyal, kültürel ve sportif etkinlikler organize edilmektedir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "manevi eğitim",
+            "değerler eğitimi",
+            "erdemliler haftası",
+            "kur'an-ı kerim",
+            "din kültürü",
+            "ders saati",
+            "erdemliler topluluğu",
+            "sosyal sorumluluk"
+        ],
+        "version": "2025-10",
+        "chunk_index": 9
+    },
+    {
+        "id": "lise-10",
+        "level": "lise",
+        "title": "EDUxLab Atölye Programı, Felsefesi ve Yapısı (Tümü)",
+        "question": "EDUxLab atölye programı nedir, felsefesi nasıldır ve 9-10. sınıf dersleri nelerdir?",
+        "answer_type": "table_and_paragraph",
+        "embedding_hint": "eduxlab, atölye, 9. sınıf, 10. sınıf, periyot, felsefe, yapı, k12net, sarmal program, disiplinlerarası, sertifika, uzayda bilim, mühendislik",
+        "content": "EDUxLab Atölye Programı\nÇözüm’de\nBir Çocuk Yetişir, Gelecek Değişir.\n\n| Periyot | 9. Sınıf | 10. Sınıf |\n| :--- | :--- | :--- |\n| 1. Periyot | Uzayda Bilim: Uzay Seyahati | Uzayda Bilim: Uzay Yerleşimi |\n| 2. Periyot | Mühendislik ve Tasarım | Mühendislik ve Tasarım Meydan Okuması |\n| 3. Periyot | 3D Modelleme Stüdyosu | Mobil Uygulama Macerası |\n| 4. Periyot | Ahşap Tasarım III | Seramik Sanatı II |\n\n“Bir çocuk yetişir, gelecek değişir”\nsloganı ile öğrencilerimizin çok yönlü bireyler olarak kendilerini\nyetiştirmesini önemsemekteyiz. Okulumuza özgü tasarlanan EDUxLab atölye\nprogramı doğrultusunda yürütülen çalışmalar bu nedenle oldukça önemlidir. EDUxLab'ın\ntemelinde, öğrenmeyi gerçek dünya bağlamlarına oturtan ve öğrenciyi merkeze\nalan bir yaklaşım bulunmaktadır. Bu yaklaşım, öğrencilerin disiplinlerarası\nprojeler aracılığıyla anlam oluşturduğu, bilgiyi pasif bir şekilde almak yerine\naktif olarak inşa ettiği bir öğrenme ekosistemi tasavvur eder. Bu ekosistem,\ngeleneksel sınıf duvarlarını aşarak okulu, toplum ve endüstri ile entegre bir\n\"öğrenme laboratuvarına\" dönüştürmeyi amaçlar.\nEDUxLab atölye programı kapsamında\nöğrencilerimizin Mühendislik, Bilim, Teknoloji ve Sanat ana başlıkları altında\nfarklı disiplinlere ait bilgi ve becerileri edinmesi temel hedefimizdir.\nSarmal program tasarımı ile\nkurgulanan, periyotlu yapıya sahip program, yıl içerisinde dört dönem halinde\nyürütülmektedir. Bu sayede öğrencilerin farklı alanları deneyimlemesi sağlanır.\nPeriyotlu yapıda MEB Eğitim-öğtretim yılı takvimi esas alınır ve her periyot\nyaklaşık dokuz hafta sürmektedir. Periyotlara ilişkin diğer detaylar K12Net\nAjanda modülü üzerinden paylaşılmaktadır. Ders içeriğine dair bilgilendirme\nmesajları yine K12Net üzerinden Ekran Mesajı olarak gönderilmektedir.\nPeriyot boyunca edinilen kazanımlara uygun ölçme ve değerlendirme çalışmaları\ngerçekleştirilir. Lise\nkademesinde, 70 ve üzerinde puan alan öğrencilerimiz başarı sertifikası almaya\nhak kazanmaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "eduxlab",
+            "atölye",
+            "ders programı",
+            "9. sınıf",
+            "10. sınıf",
+            "felsefe",
+            "yapı",
+            "değerlendirme",
+            "k12net",
+            "sertifika",
+            "disiplinlerarası"
+        ],
+        "version": "2025-10",
+        "chunk_index": 10
+    },
+    {
+        "id": "lise-11",
+        "level": "lise",
+        "title": "Öğrenci Kulüpleri (Seçmeli Dersler)",
+        "question": "Çözüm Koleji'nde öğrenci kulüpleri (seçmeli dersler) nasıl işler ve hangi kulüpler mevcuttur?",
+        "answer_type": "paragraph_and_list",
+        "embedding_hint": "öğrenci kulüpleri, seçmeli dersler, kulüp listesi, fll challenge, robotik, mun, yazar atölyesi, spor kulüpleri, müzik kulüpleri",
+        "content": "Öğrenci Kulüpleri (Seçmeli Dersler)\n\nÇözüm Koleji’nde, öğrencilerin\nsorumluluk alarak öz güven kazanmalarını, ilgi alanlarını keşfetmelerini ve bu\nalanlarda kendilerini geliştirmelerini sağlayan bir okul ortamının oluşturulması\nve sürekli olarak yaşatılması hedeflenmektedir.\n\nÖğrenci kulüplerinde; bilimsel,\nsosyal, kültürel, sanatsal ve sportif etkinliklere yönelik çalışmalar\nyürütülmektedir. Bu kulüpler, öğrencilerin kendi ilgi, merak, yetenek ve\nyetkinliklerine uygun olarak seçtikleri alanlarda yıl boyunca aktif bir şekilde\nçalışmalarını desteklemektedir.\n\nÖğrencilerin seçimleri doğrultusunda\nmutlu, üretken bireyler olmalarına büyük bir özen gösterilmektedir. Aynı\nzamanda, her kulübün etkin ve verimli bir şekilde çalışması, okul çalışma\ndisiplinin temel öncelikleri arasında yer almaktadır. Öğrenci kulüpleri haftada\n2 saat olacak şekilde uygulanır, her bir kulüp için aylık ve haftalık ders\nplanları dönem başında hazırlanır.\n\nLisede öğrenci kulüplerinden bazıları:\n\n* FLL Challenge (Robotik Kulübü)\n* Karakalem (Görsel Sanatlar)\n* Yazar Atölyesi (Türkçe)\n* Future Problem Solving (FKB Zümresi)\n* MUN- Birleşmiş Milletler Modeli (İngilizce)\n* Spor Kulüpleri (Okçuluk, Futsal, Pilates)\n* Müzik Kulüpleri (Keman, Piyano, Gitar)\n\n2024-2025 eğitim-öğretim yılında Ankara\nÇözüm Koleji lisesinde aktif olarak faaliyet gösteren, öğrencilerin ilgi ve\nyeteneklerine göre katılım sağlayabileceği 32 öğrenci kulübü (seçmeli\nders) bulunmaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "kulüp",
+            "seçmeli ders",
+            "sosyal etkinlik",
+            "robotik",
+            "fll",
+            "mun",
+            "spor",
+            "müzik"
+        ],
+        "version": "2025-10",
+        "chunk_index": 11
+    },
+    {
+        "id": "lise-12",
+        "level": "lise",
+        "title": "Lisede Sanat Faaliyetleri",
+        "question": "Lisede sanat eğitimi nasıl verilir ve hedefleri nelerdir?",
+        "answer_type": "paragraph",
+        "embedding_hint": "sanat eğitimi, görsel sanatlar, estetik algı, eleştirel düşünme, güzel sanatlar hazırlık, portfolyo, dijital sanat",
+        "content": "Sanat ve Spor Faaliyetleri\nSanat\nve Sporda Yetenekleri Geliştiren Okul\n\nLisede Sanat Faaliyetleri\nÇözüm Koleji'nde lise kademesindeki sanat\neğitimi, öğrencilerin sanatsal bilgi ve becerilerini ileri seviyeye taşıyarak\neleştirel düşünme, estetik algı ve özgünlük kazanmalarını hedefler. Bu süreçte\nöğrenciler, sanatın tarihsel gelişimini ve farklı akımları detaylı bir şekilde\nöğrenerek sanat eserlerini analiz etme becerisi edinirler. Aynı zamanda, kendi\nsanatsal üsluplarını geliştirmeleri teşvik edilerek özgün çalışmalar üretmeleri\ndesteklenir.\nSanat eğitimi, öğrencilerin görsel\nokuryazarlıklarını artırarak sanat eserleri üzerine yorum yapabilmelerine\nolanak tanır. Resim, heykel, grafik tasarım ve dijital sanat gibi çeşitli\nalanlarda teknik bilgi edinmeleri ve farklı malzemeleri deneyimlemeleri\nsağlanır. Böylece öğrenciler, sanatın farklı disiplinlerini keşfederken\nbireysel ve toplumsal ifade biçimlerini anlamaya başlarlar.\nAyrıca, Çözüm Koleji’nde sanat eğitimi\nsanatsal kariyer hedefleyen öğrenciler için temel bir altyapı oluşturur. Güzel\nsanatlar fakültelerine hazırlanan öğrenciler için portfolyo çalışmaları yapılır\nve sanatsal gelişimleri yakından takip edilir. Sanatın sosyal ve kültürel\nboyutları üzerine yürütülen çalışmalar, öğrencilerin eleştirel bakış açısını\ngeliştirmelerine ve sanata olan duyarlılıklarının artmasına katkı sağlar.\nSonuç olarak, lise düzeyindeki sanat\neğitimi, öğrencilerin sanatı bir ifade aracı olarak kullanmalarını sağlayarak\nestetik bilinçlerini ve sanatsal yetkinliklerini en üst seviyeye çıkarmayı\namaçlar. Sanat, yalnızca bir ders olarak değil, hayatın bir parçası olarak\nbenimsetilir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "sanat",
+            "görsel sanatlar",
+            "resim",
+            "portfolyo",
+            "güzel sanatlar"
+        ],
+        "version": "2025-10",
+        "chunk_index": 12
+    },
+    {
+        "id": "lise-13",
+        "level": "lise",
+        "title": "Lisede Spor Faaliyetleri ve Periyotları",
+        "question": "Lisede beden eğitimi ve spor dersleri nasıl planlanır ve branşlar nelerdir?",
+        "answer_type": "paragraph_and_table",
+        "embedding_hint": "spor faaliyetleri, beden eğitimi, periyotlu sistem, voleybol, basketbol, okçuluk, masa tenisi, futbol, postür",
+        "content": "Lisede\nSpor Faaliyetleri\n\nÇözüm Koleji olarak, öğrencilerimizin\nbedensel ve zihinsel gelişimlerini desteklemek amacıyla Beden Eğitimi\nderslerini 9’ar haftalık periyotlar hâlinde planlamaktayız. Dersleri yıl\niçerisinde dört farklı spor branşı üzerinden şekillendirerek, her öğrencinin\nyıl sonunda dört farklı spor dalında beceri kazanmasını ve ait hissettiği\nbranşa yönelmesini sağlıyoruz.\nKas ve iskelet sistemi gelişimi yaş\ngruplarına göre farklılık gösterdiği için, spor branşları öğrencilerin fiziksel\ngelişimlerine en uygun olacak şekilde belirlenmektedir. Branş seçimleri, kas ve\niskelet sistemini destekleyen, öğrencilerin eğlenerek sosyalleşmelerini\nsağlayan, postür bozukluklarının giderilmesine yardımcı olan etkinlikler\nüzerinden oluşturulmaktadır.\n\nLise Beden Eğitimi\nve Spor Dersi Periyotları\n\n| | Lise (Kız) | Lise (Erkek) |\n| :--- | :--- | :--- |\n| 1. Periyot | Voleybol | Voleybol |\n| 2. Periyot | Masa Tenisi | Basketbol |\n| 3. Periyot | Okçuluk | Masa Tenisi |\n| 4. Periyot | Basketbol | Futbol |",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "spor",
+            "beden eğitimi",
+            "periyot",
+            "voleybol",
+            "basketbol",
+            "futbol",
+            "okçuluk"
+        ],
+        "version": "2025-10",
+        "chunk_index": 13
+    },
+    {
+        "id": "lise-14",
+        "level": "lise",
+        "title": "Kapsamlı Gelişimsel Rehberlik Sistemi",
+        "question": "Çözüm Koleji'ndeki Kapsamlı Gelişimsel Rehberlik Sistemi neleri içerir?",
+        "answer_type": "list",
+        "embedding_hint": "rehberlik, pdr, gelişim gözlem formu, bireysel görüşme, projektif testler, çözüm ajandam, mentor öğretmen, etüt, 21. yy becerileri, çözüm öğrenme atölyesi, veli bülteni, meslek tanıtım",
+        "content": "Kapsamlı Gelişimsel Rehberlik Sistemi\nGelişimi\nDestekleyen Okul\n\nOkulumuzda kapsamlı gelişimsel\nrehberlik sistemi uygulanmaktadır. Bu sistem kapsamında;\n\n* Öğrencinin\nakademik ve psiko-sosyal gelişimleri (girişkenlik, hedefe bilinçli yönelim\nvb.), aile durumları, tutum ve davranışları, ilgi ve yetenekleri gibi öğrenciye\nözgü her durumu yakından takip edebilmek amacıyla sınıf öğretmeni tarafından 15\ngünde bir hazırlanan Gelişim Gözlem Formları rehberlik birimi tarafından\nincelenerek bireysel rehberlik hizmeti sunulmaktadır.\n* Her\nperiyotta* en az bir kez olmak üzere, öğrenciler ile bireysel görüşmeler\ngerçekleştirilmekte ve görüşmelerin değerlendirmeleri veliler ile\npaylaşılmaktadır.\n* Öğrencilerin\ngelişim dönemi özelliklerine ve ihtiyaçlarına yönelik bireyi tanıma teknikleri\nkapsamında projektif ve objektif testler** uygulanmaktadır. Testlerin\ndeğerlendirilmesi veli ve öğrencilerle gerçekleştirilerek, okul ve aile iş\nbirliği içerisinde öğrencilerin gelişimi desteklenmektedir.\n* Öğrencilerin\nbireysel gelişimlerini, ilgi ve yeteneklerini, günlük duygu durumlarını ve\nakademik süreçlerini daha iyi fark edebilmeleri, ayrıca kendilerini bilinçli\nbir şekilde takip edebilmeleri adına Çözüm Ajandam veya Çözüm\nRehberim defterlerini düzenli olarak doldurmaları beklenmektedir. Bu süreç,\nonların öz farkındalık kazanmalarına, hedeflerini belirlemelerine ve\ngelişimlerini gözlemlemelerine katkı sağlar. Mentor öğretmenler belirli\nperiyotlarla ajandaları inceleyerek, öğrencilere bireysel gelişimlerini\ndestekleyici geri bildirimler sunar.\n* Akademik başarıyı ölçmeye yönelik\nolarak gerçekleştirilen değerlendirmeler, denem sınavları, öğretmen görüşleri\nveya öğrenci talebi ile ihtiyaç görülen konulara ilişkin bireysel veya grup etütleri\nverilmektedir.\n* Öğrenciler\nile aylık olarak sınıf içerisinde rehberlik etkinlikleri gerçekleştirilmekte ve\nöğrencilerin sosyal rolleri öğreniş biçimleri, olumlu davranış geliştirme,\neleştirel düşünme ve problem çözme gibi 21. yy. becerilerini geliştirme süreci\ntakip edilmekte ve desteklenmektedir.\n* Öğrencilerin\ngelişim dönemi özelliklerine ve ihtiyaçlarına yönelik psikolojik farkındalığı\noluşturma ve ebeveyn-çocuk iletişimini desteklemek amacıyla yıl içerisinde\nvelilere yönelik Çözüm Öğrenme Atölyesi düzenlenmektedir. Çözüm\nÖğrenme Atölyesi kapsamında seminerler, çalıştaylar ve atölyeler\nplanlanmaktadır.\n* Sınava\nhazırlık sürecinde olan öğrenciler ve öğrencinin velisine yönelik Zaman\nYönetimi, Öğrenme Stilleri, Verimli Ders Çalışma Teknikleri, Sınav Öğrencisi\nEbeveyni Olmak gibi konularda bilgilendirici ve yol gösterici duyuru, etkinlik\nveya seminerler düzenlemektedir.\n* Öğrencilerin\nkendi ilgi, yetenek ve ihtiyaçları doğrultusunda okul içi ve okul dışı sosyal\nve kültürel etkinliklere yönelmesine yardımcı olmak amacıyla; meslek tanıtım\ngünleri ve uzmanlar tarafından tecrübe paylaşımları gerçekleştirilmektedir.\n* Okulumuz\nPDR Birimi, aylık olarak velilerimize yönelik bilgilendirici bültenler\nhazırlamaktadır. Bu bültenler, ailelerimize rehberlik hizmetleri, gelişimsel\nöneriler ve okulumuzdaki etkinlikler hakkında önemli bilgiler sunmayı\namaçlamaktadır.\n\n*Bir\neğitim- öğretim yılında 4 periyot bulunmaktadır.\n\n**Çocuğun\nkendini nasıl algıladığı, duyguları, ailesi ve çevresi hakkındaki görüşleri ile\nilgili bilgi toplamayı amaçlayan değerlendirme gerektiren veya yapılandırılmış\ntestlerdir.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "rehberlik",
+            "pdr",
+            "gelişim takibi",
+            "veli",
+            "mentor",
+            "etüt",
+            "seminer",
+            "kariyer",
+            "gelişim gözlem formu",
+            "çözüm öğrenme atölyesi"
+        ],
+        "version": "2025-10",
+        "chunk_index": 14
+    },
+    {
+        "id": "lise-15",
+        "level": "lise",
+        "title": "Okul-Veli İletişimi ve Görüşme Takvimi",
+        "question": "Çözüm Koleji'nde okul-veli iletişimi nasıl sağlanır ve veli görüşme sıklığı nedir?",
+        "answer_type": "paragraph_and_list",
+        "embedding_hint": "okul veli iletişimi, k12net, whatsapp, sms, veli görüşmesi, veli toplantısı, mentor öğretmen görüşmesi",
+        "content": "Okul-Veli İletişimi\n\nÖğrencilerimizle ilgili tüm\nbilgilendirmeler günlük, haftalık ve aylık periyotlarda velilerle düzenli\nolarak paylaşılmaktadır. Bu süreçte kullanılan iletişim kanalları; K12Net, SMS,\nWhatsApp bilgilendirme grupları ve telefon aramalarıdır. Öğrencilerimizin gelişimini\nen iyi şekilde destekleyebilmek için düzenli veli iletişimi sağlanmaktadır:\n\n* 9,\n     10 ve 11. sınıf öğretmenlerimiz ayda bir kez,\n* 12.\n     sınıfta ise mentor öğretmenimiz 15 günde bir kez veli görüşmesi\n     gerçekleştirmektedir.\n\nÖğrencilerin gelişim süreçlerine\nyönelik genel bilgilendirmelerin yapıldığı veli toplantıları, genel\nbilgilendirme veya bireysel görüşme formatında planlanmaktadır. (Birinci\ndönemde 2, ikinci dönemde 1 toplantı)",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "veli iletişimi",
+            "k12net",
+            "veli toplantısı",
+            "mentor öğretmen"
+        ],
+        "version": "2025-10",
+        "chunk_index": 15
+    },
+    {
+        "id": "lise-16",
+        "level": "lise",
+        "title": "Lise Okul İçi ve Okul Dışı Öğrenme Ortamları",
+        "question": "Lisede hangi okul içi ve okul dışı öğrenme ortamları (atölyeler, geziler) bulunmaktadır?",
+        "answer_type": "paragraph_and_list",
+        "embedding_hint": "öğrenme ortamları, okul içi, okul dışı, atölye, sera alanı, robotik, ahşap, seramik, okul gezisi, gordion, çamkoru",
+        "content": "Lise Okul İçi Öğrenme Ortamları\n\nLise öğrencilerimizin gelişimlerini\ndesteklemek amacıyla, okul içi öğrenme ortamları, eğitim sürecinde aktif olarak\nkullanılmaktadır:\n\n* Okul\n     Sera Alanı\n* Konferans\n     Salonu\n* Mutfak\n* Uzay\n     Havacılık Atölyesi\n* Ahşap\n     Atölyesi\n* Seramik\n     Atölyesi\n* Robotik\n     Kodlama Atölyesi\n\nLise Okul Dışı Öğrenme Ortamları\n\nLisede, öğrencilerin yıl boyunca\ngerçekleştireceği geziler, dönem başında belirli gün ve haftalar doğrultusunda\nplanlanmaktadır. Bu geziler arasında Gordion (eski çağ medeniyetleri kazanımları\nkapsamında), Çamkoru (biyoçeşitlilik inceleme gezisi) gibi eğitimi pekiştiren ortamlar\nyer alacaktır. Çözüm Koleji’nde, öğrencilerimizin öğrenme deneyimlerini\nzenginleştirmek adına okul gezileri büyük bir öneme sahiptir ve bu tür\netkinlikler öğrencilerimizin gelişimine önemli katkılar sağlamaktadır.",
+        "source": "Lise.VeliBilgilendirmeMetni.docx",
+        "tags": [
+            "öğrenme ortamı",
+            "okul içi",
+            "okul dışı",
+            "gezi",
+            "atölye",
+            "sera",
+            "robotik",
+            "gordion"
+        ],
+        "version": "2025-10",
+        "chunk_index": 16
+    }
+]
