@@ -1,4 +1,6 @@
-hafıza ekle
-diğer öğretim seviyelerinde embedinglerini al ve bir mimari oluştur.
-
-bu yaklaşımlar için sektörde kullanılan yaklaşımları incele ve plan oluştur.
+promptu düzenle
+her zaman retrieve e düşmesin.
+kodu okunaklı hale getir.
+cli mevzusunu kaldır.
+kademe stateini tutma stratejisini geliştir.
+hataları logla

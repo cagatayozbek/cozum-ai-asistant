@@ -1,11 +1,25 @@
 import os
+from typing import Annotated, TypedDict
 from dotenv import load_dotenv
+from operator import add
+
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
+
+from langgraph.graph import StateGraph, END, START
+from langgraph.checkpoint.memory import MemorySaver
+
 from retriever import get_retrieved_documents, SUPPORTED_LEVELS
 
 # --- CONFIGURATION ---
-CHAT_MODEL = "gemini-2.0-flash-exp"
-MAX_HISTORY = 5  # Son 5 mesajı hatırla
+CHAT_MODEL = "gemini-2.5-flash"
+
+# --- STATE SCHEMA (TypedDict for LangGraph) ---
+class ChatState(TypedDict):
+    """State for the chat graph."""
+    levels: list[str] | None
+    messages: Annotated[list[BaseMessage], add]  # add operator appends messages
+    context: str
 
 def initialize_chat_model() -> ChatGoogleGenerativeAI:
     """API anahtarını yükler ve sohbet modelini başlatır."""
@@ -17,7 +31,7 @@ def initialize_chat_model() -> ChatGoogleGenerativeAI:
     return ChatGoogleGenerativeAI(
         model=CHAT_MODEL,
         google_api_key=google_api_key,
-        temperature=0.7,
+        
     )
 
 def format_context(documents: list) -> str:
@@ -102,124 +116,247 @@ def show_help():
     print("  /cikis veya /exit     - Programdan çıkar")
     print("─"*70)
 
-class ChatSession:
-    """Sohbet oturumu yönetimi."""
+# --- GRAPH NODES ---
+def retrieve_node(state: ChatState) -> dict:
+    """Retrieve relevant documents based on last user message."""
+    if not state.get("messages"):
+        return {"context": ""}  # Return default empty context
     
-    def __init__(self, levels: list, llm):
-        self.levels = levels
-        self.llm = llm
-        self.history = []  # (role, message) tuple'ları
+    # Get last user message
+    last_user_msg = None
+    for msg in reversed(state["messages"]):
+        if isinstance(msg, HumanMessage):
+            last_user_msg = msg.content
+            break
     
-    def add_to_history(self, role: str, message: str):
-        """Sohbet geçmişine mesaj ekler."""
-        self.history.append((role, message))
-        # Maksimum geçmiş sınırı
-        if len(self.history) > MAX_HISTORY * 2:  # user + assistant çiftleri
-            self.history = self.history[-MAX_HISTORY * 2:]
+    if not last_user_msg or not state.get("levels"):
+        return {"context": ""}
     
-    def get_history_context(self) -> str:
-        """Sohbet geçmişini formatlar."""
-        if not self.history:
-            return ""
-        
-        formatted = "\n--- ÖNCEKİ SOHBET ---\n"
-        for role, message in self.history[-6:]:  # Son 3 çift (6 mesaj)
-            formatted += f"{role}: {message}\n"
-        formatted += "--- ÖNCEKİ SOHBET SONU ---\n\n"
-        return formatted
+    # Retrieve documents
+    retrieved_docs = get_retrieved_documents(
+        last_user_msg,
+        k=4,
+        levels=state.get("levels", []),
+        force_recreate=False,
+        silent=True
+    )
     
-    def clear_history(self):
-        """Sohbet geçmişini temizler."""
-        self.history = []
-        print("\n✅ Sohbet geçmişi temizlendi.")
+    # Format context
+    if not retrieved_docs:
+        context = "Bilgi bulunamadı."
+    else:
+        context_parts = []
+        for i, (doc, score) in enumerate(retrieved_docs, 1):
+            level = doc.metadata.get('level', 'N/A').upper()
+            title = doc.metadata.get('title', 'Başlık yok')
+            content = doc.metadata.get('original_content', doc.page_content)
+            context_parts.append(f"[{level}] {title}\n{content}")
+        context = "\n\n---\n\n".join(context_parts)
     
-    def change_levels(self) -> list:
-        """Eğitim kademelerini değiştirir."""
-        print("\n🔄 Yeni kademe seçimi yapılıyor...")
-        return welcome_and_get_levels()
+    # Return context to be used by LLM (store in state for next node)
+    # Don't add to messages, just pass it through state
+    return {"context": context}
+
+def llm_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
+    """Generate response using LLM with context."""
+    if not state.get("messages"):
+        return {}
     
-    def chat(self, user_query: str) -> str:
-        """Kullanıcı mesajını işler ve yanıt üretir."""
-        # Retriever ile ilgili dokümanları al (silent mode)
-        retrieved_docs = get_retrieved_documents(
-            user_query, 
-            k=4, 
-            levels=self.levels,
-            force_recreate=False,
-            silent=True  # Chatbot modunda sessiz çalış
-        )
-        
-        if not retrieved_docs:
-            return "Üzgünüm, bu konuyla ilgili bilgi bulamadım. Başka bir konuda size nasıl yardımcı olabilirim?"
-        
-        # Dokümanları formatla
-        context = format_context(retrieved_docs)
-        history_context = self.get_history_context()
-        
-        # Kademe bilgisini ekle
-        level_info = ", ".join([get_level_display_name(l) for l in self.levels])
-        
-        # Prompt oluştur
-        prompt = f"""Sen Çözüm Eğitim Kurumları için tasarlanmış yapay zeka destekli bir veli asistanısın.
+    # Get last user message
+    user_msg = None
+    for msg in reversed(state["messages"]):
+        if isinstance(msg, HumanMessage):
+            user_msg = msg.content
+            break
+    
+    if not user_msg:
+        return {}
+    
+    # Get context from state (set by retrieve_node)
+    context = state.get("context", "Bilgi bulunamadı.")
+    
+    # Build system prompt
+    level_info = ", ".join([get_level_display_name(l) for l in state.get("levels", [])]) if state.get("levels") else "Henüz seçilmedi"
+    
+    system_prompt = f"""Sen Çözüm Eğitim Kurumları için tasarlanmış yapay zeka destekli bir veli asistanısın.
 Görevin: Velilere okul hakkında doğru, net ve samimi bilgi vermek.
 
 KURALLAR:
-1. Yanıtlarını SADECE aşağıdaki BAĞLAM'daki bilgilere dayandır
-2. BAĞLAM'da cevap yoksa: "Bu konuda şu an bilgim yok, ancak okulumuzla iletişime geçerek detaylı bilgi alabilirsiniz."
+1. Yanıtlarını SADECE sağlanan BAĞLAM'daki bilgilere dayandır
+2. Yanıtlarında KESİNLİKLE uydurma yapma
 3. Asla tahmin etme veya uydurma
-4. Türkçe, açık, net ve samimi bir üslup kullan (2-5 cümle)
-5. Gerekirse özet yap, doğrudan alıntı yapma
-6. BAĞLAM belirsizse netleştirici TEK bir kısa soru sor
+4. Profesyonel ve samimi bir üslup kullan
 
-VELİNİN ÇOCUKLARINDAKİ KADEMELER: {level_info}
+6. Kullanıcıya hitap ederken: "siz", "sizlere", "istiyorsanız" gibi saygılı ifadeler
+7. Yanıtları 2-5 cümle ile sınırla, özet ver
 
-{history_context}
 
---- BAĞLAM ---
+ŞU ANDA SEÇİLİ KADEMELER: {level_info}
+
+GENEL SORULAR İÇİN REHBERLİK:
+- Eğer soru ÇOK GENEL ise (örn: "okul hakkında bilgi", "okulunuzu anlatır mısınız"):
+  → BAĞLAM'dan 1-2 ilginç bilgi ver (örn: eğitim anlayışı, özellikler)
+  → MUTLAKA bu listeyi göster:
+  
+  "Size daha detaylı hangi konuda bilgi verebilirim?
+  • Eğitim programları ve müfredat
+  • İngilizce ve yabancı dil eğitimi  
+  • Sosyal aktiviteler ve kulüpler
+  • Ücretler ve kayıt işlemleri
+  • Servis ve yemek hizmetleri"
+
+KADEME YÖNETİMİ:
+- Eğer kullanıcı seçili OLMAYAN bir kademe hakkında soru sorarsa:
+  → Kibarca sor: "Şu an {level_info} için bilgi verebiliyorum. [İstenenKademe] hakkında da bilgi almak ister misiniz?"
+- Kullanıcı EVET derse → "Harika! [İstenenKademe] bilgilerini de ekledim. Sorunuzu tekrar sorabilirsiniz." de
+  VE `#KADEME_EKLE:[kademe_adi]#` tag'i ekle (kullanıcı görmez)
+
+Özel Tag Formatı:
+- #KADEME_EKLE:anaokulu# → Anaokulu ekle
+- #KADEME_EKLE:lise# → Lise ekle
+- Tag'i yanıtın EN SONUNA ekle, kullanıcı görmeyecek
+
+BAĞLAM:
 {context}
---- BAĞLAM SONU ---
 
-VELİNİN SORUSU: {user_query}
+VELİNİN SORUSU: {user_msg}
 
 YANITINIZ (samimi, kısa ve net):"""
+    
+    # Invoke LLM with single formatted message (Gemini prefers this)
+    response = llm.invoke([HumanMessage(content=system_prompt)])
+    
+    return {"messages": [AIMessage(content=response.content)]}
 
-        # LLM'i çağır
-        response = self.llm.invoke(prompt)
+class ChatSession:
+    """LangGraph-based chat session manager."""
+    
+    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: MemorySaver):
+        self.llm = llm
+        self.checkpointer = checkpointer
+        self.graph = self._build_graph()
+        self.thread_id = "default"  # Can be changed for multi-user scenarios
+    
+    def _build_graph(self) -> StateGraph:
+        """Build the LangGraph workflow."""
+        # Create graph
+        workflow = StateGraph(ChatState)
         
-        # Geçmişe ekle
-        self.add_to_history("Veli", user_query)
-        self.add_to_history("Asistan", response.content)
+        # Add nodes
+        workflow.add_node("retrieve", retrieve_node)
+        workflow.add_node("llm", lambda state: llm_node(state, self.llm))
         
-        return response.content
+        # Add edges - simple flow for now
+        workflow.add_edge(START, "retrieve")
+        workflow.add_edge("retrieve", "llm")
+        workflow.add_edge("llm", END)
+        
+        # Compile with checkpointer
+        return workflow.compile(checkpointer=self.checkpointer)
+    
+    def get_config(self):
+        """Get configuration with thread_id."""
+        return {"configurable": {"thread_id": self.thread_id}}
+    
+    def get_state(self) -> dict:
+        """Get current state as dict."""
+        state = self.graph.get_state(self.get_config())
+        if state and state.values:
+            # Ensure all keys have defaults
+            values = state.values
+            return {
+                "levels": values.get("levels"),
+                "messages": values.get("messages", []),
+                "context": values.get("context", "")
+            }
+        return {"levels": None, "messages": [], "context": ""}
+    
+    def clear_history(self):
+        """Clear conversation history by resetting thread."""
+        self.thread_id = f"thread_{os.urandom(8).hex()}"
+        print("\n✅ Sohbet geçmişi temizlendi.")
+    
+    def set_levels(self, levels: list[str]):
+        """Set education levels in state."""
+        # Simply update state with new levels
+        self.graph.update_state(self.get_config(), {"levels": levels})
+        print(f"\n✅ Kademeler güncellendi: {', '.join([get_level_display_name(l) for l in levels])}")
+    
+    def chat(self, user_query: str) -> str:
+        """Send user message and get response."""
+        try:
+            # Simply invoke with the new message - let the graph handle state
+            # The 'add' operator will automatically append to existing messages
+            result = self.graph.invoke(
+                {"messages": [HumanMessage(content=user_query)]},
+                self.get_config()
+            )
+            
+            # Extract last AI message from result
+            if result and "messages" in result:
+                for msg in reversed(result["messages"]):
+                    if isinstance(msg, AIMessage):
+                        response = msg.content
+                        
+                        # Check for level change tags
+                        import re
+                        tag_pattern = r'#KADEME_EKLE:(\w+)#'
+                        matches = re.findall(tag_pattern, response)
+                        
+                        if matches:
+                            # Extract and add new levels
+                            current_state = self.get_state()
+                            current_levels = current_state.get("levels", [])
+                            
+                            for level_to_add in matches:
+                                level_to_add = level_to_add.lower()
+                                if level_to_add in SUPPORTED_LEVELS and level_to_add not in current_levels:
+                                    current_levels.append(level_to_add)
+                            
+                            # Update state with new levels
+                            if current_levels != current_state.get("levels", []):
+                                self.graph.update_state(self.get_config(), {"levels": current_levels})
+                            
+                            # Remove tags from response
+                            response = re.sub(tag_pattern, '', response).strip()
+                        
+                        return response
+            
+            return "Üzgünüm, bir yanıt üretemedim. Lütfen sorunuzu farklı şekilde sormayı deneyin."
+        except Exception as e:
+            print(f"\n⚠️ Hata: {e}")
+            import traceback
+            traceback.print_exc()
+            return f"Bir hata oluştu: {str(e)}"
 
 def main():
-    """Kullanıcıdan sürekli girdi alan ve RAG ile cevap üreten ana sohbet döngüsü."""
+    """Main CLI loop with LangGraph-based chat."""
     try:
-        # 1. LLM'i başlat
+        # 1. Initialize LLM and checkpointer
         llm = initialize_chat_model()
+        checkpointer = MemorySaver()
         
-        # 2. Veliyi karşıla ve seviye seç
+        # 2. Create session
+        session = ChatSession(llm, checkpointer)
+        
+        # 3. Welcome and select levels
         selected_levels = welcome_and_get_levels()
+        session.set_levels(selected_levels)
         
-        # 3. Sohbet oturumu başlat
-        session = ChatSession(selected_levels, llm)
-        
-        # 4. Yardım göster
+        # 4. Show help
         print("\n" + "="*70)
         print("💬 Sohbet başladı! Artık sorularınızı sorabilirsiniz.")
         show_help()
         print("="*70)
         
-        # 5. Ana sohbet döngüsü
+        # 5. Main chat loop
         while True:
             try:
                 user_input = input("\n👤 Siz: ").strip()
                 
-                # Boş girdi kontrolü
                 if not user_input:
                     continue
                 
-                # Komut kontrolü
                 user_input_lower = user_input.lower()
                 
                 if user_input_lower in ["/exit", "/cikis", "exit", "quit"]:
@@ -231,15 +368,15 @@ def main():
                     continue
                 
                 elif user_input_lower in ["/seviye", "/kademe"]:
-                    selected_levels = session.change_levels()
-                    session.levels = selected_levels
+                    new_levels = welcome_and_get_levels()
+                    session.set_levels(new_levels)
                     continue
                 
                 elif user_input_lower in ["/temizle", "/clear"]:
                     session.clear_history()
                     continue
                 
-                # Normal sohbet
+                # Normal chat
                 print("\n🤖 Asistan: ", end="", flush=True)
                 response = session.chat(user_input)
                 print(response)
