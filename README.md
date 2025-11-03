@@ -1,213 +1,195 @@
-# 🎓 Çözüm Eğitim Kurumları - AI Veli Asistanı
+# 🎓 Çözüm Koleji Veli Asistanı
 
-Çözüm Eğitim Kurumları'nın tüm okul seviyeleri (anaokulu, ilkokul, ortaokul, lise) için RAG (Retrieval-Augmented Generation) tabanlı soru-cevap sistemi.
+AI destekli veli asistanı - Okul programları, etkinlikler ve eğitim hakkında anında yanıt.
+
+**🌐 [Demo'yu Deneyin →](https://cozum-veli-asistani.streamlit.app)** *(Deployment sonrası güncellenecek)*
 
 ## ✨ Özellikler
 
-- **Çoklu Seviye Desteği**: Anaokulu'ndan lise'ye tüm okul seviyeleri için bilgi erişimi
-- **Semantic Search**: Google Gemini embeddings ile gelişmiş anlam tabanlı arama
-- **FAISS Vector Store**: Hızlı ve etkili benzerlik araması
-- **Zenginleştirilmiş Embedding**: Başlık, soru, anahtar kelimeler ve içerik birleşimi
-- **Seviye Filtreleme**: Belirli okul seviyelerinde arama yapabilme
-- **Cross-Platform**: Windows, macOS ve Linux desteği
+- 💬 **Doğal Dil Sohbet**: İnsan gibi konuşan AI asistanı
+- 📚 **RAG Sistemi**: Sadece okul dokümanlarından bilgi verir, uydurma yapmaz
+- 🎯 **Kademe Bazlı**: Anaokulu, İlkokul, Ortaokul, Lise - tümü için destek
+- 🔄 **Sohbet Geçmişi**: Takip sorularını anlayan akıllı asistan
+- ⚡ **Hızlı Yanıt**: Gereksiz aramalarda FAISS'i atlar, performanslı çalışır
+- 📱 **Web UI**: Streamlit ile modern, responsive arayüz
+
+## �️ Teknolojiler
+
+- **Frontend:** Streamlit
+- **LLM:** Google Gemini 2.5 Flash (temperature=0.4)
+- **RAG:** LangChain + FAISS vector store
+- **Graph:** LangGraph with router node for conditional retrieval
+- **Embeddings:** Google Generative AI Embeddings
 
 ## 📁 Proje Yapısı
 
 ```
-├── chunks/                  # Okul seviyelerine göre chunk dosyaları
-│   ├── anaokulu.json       # Anaokulu bilgi parçaları (15 chunk)
-│   ├── ilkokul.json        # İlkokul bilgi parçaları
-│   ├── ortaokul.json       # Ortaokul bilgi parçaları
-│   └── lise.json           # Lise bilgi parçaları
-├── chat.py                 # 🤖 İnteraktif chatbot (ANA KULLANIM)
-├── retriever.py            # 🔍 RAG retriever (test/debug)
-├── docx-converter.py       # 📄 DOCX → Markdown dönüştürücü
-├── requirements.txt        # Python bağımlılıkları
-├── .env.example           # Örnek environment dosyası
-└── README.md              # Bu dosya
+├── app.py                    # 🌐 Streamlit web UI (PRODUCTION)
+├── chat.py                   # 🤖 LangGraph chat logic
+├── retriever.py              # 🔍 FAISS RAG sistemi
+├── documents/                # 📄 Okul dokümanları (DOCX)
+├── faiss_index/              # � Vektör veritabanı (otomatik oluşturulur)
+├── .streamlit/
+│   └── config.toml          # 🎨 UI tema ayarları
+├── requirements.txt          # 📦 Python bağımlılıkları
+├── DEPLOYMENT.md            # 🚀 Deployment rehberi
+├── DEMO_BİLGİLENDİRME.md   # 📋 Kurum için demo dokümanı
+└── README.md                # 📖 Bu dosya
 ```
 
-## 🚀 Kurulum
+## 🚀 Hızlı Başlangıç
 
-### 1. Repository'yi Klonlayın
+### Lokal Geliştirme
 
 ```bash
-git clone <repo-url>
+# 1. Repository'yi klonla
+git clone https://github.com/cagatayozbek/cozum-ai-asistant.git
 cd cozum-ai-asistant
-```
 
-### 2. Virtual Environment Oluşturun
+# 2. Virtual environment oluştur
+python -m venv venv
+source venv/bin/activate  # macOS/Linux
+# veya
+venv\Scripts\activate  # Windows
 
-**Windows (PowerShell):**
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-**macOS/Linux:**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Bağımlılıkları Yükleyin
-
-```bash
+# 3. Bağımlılıkları yükle
 pip install -r requirements.txt
+
+# 4. .env dosyası oluştur
+cp .env.example .env
+# GOOGLE_API_KEY'i .env dosyasına ekle
+
+# 5. Streamlit uygulamasını başlat
+streamlit run app.py
 ```
 
-### 4. API Anahtarı Ayarlayın
+### 🔑 Google API Key Alma
 
-1. `.env.example` dosyasını `.env` olarak kopyalayın:
-
-   ```bash
-   cp .env.example .env
+1. [Google AI Studio](https://aistudio.google.com/apikey) adresine git
+2. "Create API Key" butonuna tıkla
+3. Key'i kopyala ve `.env` dosyasına ekle:
    ```
-
-2. [Google AI Studio](https://aistudio.google.com/apikey)'dan ücretsiz API anahtarı alın
-
-3. `.env` dosyasını düzenleyip API anahtarınızı ekleyin:
-   ```
-   GOOGLE_API_KEY=your_actual_api_key_here
+   GOOGLE_API_KEY=AIzaSy...
    ```
 
 ## 💡 Kullanım
 
-### 🤖 İnteraktif Chatbot (Önerilen)
+### 🌐 Web Uygulaması (Ana Kullanım)
 
-En doğal deneyim için interaktif chatbot kullanın:
+Streamlit UI ile kullanıcı dostu arayüz:
+
+```bash
+streamlit run app.py
+```
+
+**Özellikler:**
+- 📱 Responsive tasarım (mobil uyumlu)
+- 🎯 Sidebar'dan kademe seçimi
+- 💬 Chat interface ile doğal sohbet
+- 🔄 "Yeni Sohbet" butonu ile reset
+- ⚡ Gerçek zamanlı yanıtlar
+
+### �️ CLI Uygulaması (Test İçin)
+
+Terminal'den hızlı test:
 
 ```bash
 python chat.py
 ```
 
-**Özellikler:**
-
-- 🎯 Başlangıçta eğitim kademesi seçimi
-- 💬 Doğal dil ile soru-cevap
-- 🧠 Sohbet geçmişi (son 5 mesaj)
-- 🔄 Kademe değiştirme (`/seviye`)
-- 🗑️ Geçmişi temizleme (`/temizle`)
-
 **Komutlar:**
-
-- `/help` - Yardım mesajı
+- `/help` - Yardım
 - `/seviye` - Kademe değiştir
-- `/temizle` - Sohbet geçmişini sil
+- `/temizle` - Geçmişi sil
 - `/cikis` - Çıkış
 
-**Örnek Kullanım:**
+## 🧪 Örnek Sorular
 
 ```
-Seçiminiz: 1,2              # Anaokulu ve ilkokul seçildi
-Siz: İngilizce dersleri nasıl?
-Asistan: Anaokulunda İngilizce eğitimi...
-Siz: Peki ödevler nasıl veriliyor?
-Asistan: [Geçmiş bağlamında yanıt]
+👤 "Merhaba"
+🤖 "Merhaba! Ben Çözüm Eğitim Kurumları'nın veli asistanıyım..."
+
+� "Anaokulu programı nedir?"
+🤖 "Anaokulumuzda Cambridge programı ile..."
+
+👤 "Biyoloji kaç saat?" (takip sorusu)
+🤖 [Önceki yanıttan devam eder]
+
+👤 "Lise ve ortaokul matematik saatlerini karşılaştır"
+🤖 [İki kademe için bilgi verir]
 ```
 
-### 🔍 Doğrudan Retriever (Test/Debug)
+## 🌐 Production Deployment
 
-Terminal'den hızlı arama için:
+### Streamlit Cloud (Ücretsiz)
 
-```bash
-# Temel sorgu
-python retriever.py "Anaokulunda İngilizce eğitimi nasıl veriliyor?"
+1. GitHub'a push et
+2. [share.streamlit.io](https://share.streamlit.io)'ya git
+3. "New app" → Repository seç → `app.py` belirt
+4. Secrets'a `GOOGLE_API_KEY` ekle
+5. Deploy!
 
-# Daha fazla sonuç
-python retriever.py "Matematik dersleri" -k 5
+**Detaylı adımlar:** [DEPLOYMENT.md](DEPLOYMENT.md) dosyasına bakın.
 
-# Belirli kademelerde ara
-python retriever.py "Ödev politikası" --levels anaokulu ilkokul
+### Diğer Platformlar
 
-# İndeksi yeniden oluştur
-python retriever.py "test" --recreate
+- **Docker:** Dockerfile hazır değil (eklenebilir)
+- **Railway/Render:** Streamlit destekler
+- **AWS/GCP:** Cloud Run veya EC2/Compute Engine
 
-# Yardım
-python retriever.py --help
-```
-
-## 📊 Chunk Yapısı
-
-Her chunk şu alanları içerir:
-
-```json
-{
-  "id": "anaokulu-01",
-  "level": "anaokulu",
-  "title": "Vizyon",
-  "question": "Çözüm Eğitim Kurumları'nın vizyonu nedir?",
-  "answer_type": "informational",
-  "embedding_hint": "vizyon, hedef, geleceğe bakış",
-  "content": "Detaylı içerik...",
-  "source": "Anaokulu.VeliBilgilendirmeMetni.docx",
-  "tags": ["vizyon", "kurumsal"],
-  "version": "2025-10",
-  "chunk_index": 0
-}
-```
-
-### Embedding Stratejisi
-
-Retriever, daha iyi semantik arama için şu formatta embedding oluşturur:
+## 🏗️ Mimari
 
 ```
-title + question + embedding_hint + content
+┌─────────────┐
+│   User      │
+│  (Streamlit)│
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────┐
+│   LangGraph     │
+│   Router Node   │  ← Query classification
+└────┬────────────┘
+     │
+     ├─→ Greeting? → Direct LLM
+     │
+     └─→ Question? → FAISS Retrieval → LLM
+                          ▲
+                          │
+                   ┌──────┴──────┐
+                   │  Documents  │
+                   │   (DOCX)    │
+                   └─────────────┘
 ```
 
-Bu sayede:
+**Akıllı Özellikler:**
+- ✅ Selamlaşma/teşekkür → FAISS atla (hız++)
+- ✅ Kısa takip soruları → Önceki context kullan
+- ✅ Full conversation history → LLM'e geçir
 
-- 📖 **Title**: Konuyu tanımlar
-- ❓ **Question**: Doğal dil sorularını yakalar
-- 🔑 **Embedding Hint**: Anahtar kelimeleri vurgular
-- 📄 **Content**: Tam içeriği sağlar
+## � Yapılacaklar
 
-## 🛠️ DOCX Dönüştürücü
+- [ ] Streaming responses
+- [ ] Örnek soru önerileri
+- [ ] Session persistence (disk)
+- [ ] Web scraping (Instagram, website)
+- [ ] Hybrid search (keyword + semantic)
+- [ ] Analytics dashboard
 
-DOCX dosyalarını Markdown formatına dönüştürmek için:
+**Detaylı roadmap:** [yapılacaklar.md](yapılacaklar.md)
 
-```bash
-# Tek dosya
-python docx-converter.py -i "Anaokulu.VeliBilgilendirmeMetni.docx" -o "output.md"
+## 📄 Lisans
 
-# Klasör
-python docx-converter.py -i "docx_files/" -o "markdown_files/"
-```
+Bu proje Çözüm Eğitim Kurumları için geliştirilmiştir.
 
-## 🔧 Geliştirme
+## 📞 İletişim
 
-### Yeni Chunk Ekleme
+- **GitHub:** [@cagatayozbek](https://github.com/cagatayozbek)
+- **Repository:** [cozum-ai-asistant](https://github.com/cagatayozbek/cozum-ai-asistant)
 
-1. İlgili `chunks/<level>.json` dosyasını düzenleyin
-2. Chunk şemasına uygun yeni entry ekleyin
-3. İndeksi yeniden oluşturun:
-   ```bash
-   python retriever.py "test" --recreate
-   ```
+---
 
-### Desteklenen Okul Seviyeleri
-
-- `anaokulu` - Anaokulu
-- `ilkokul` - İlkokul (1-4. sınıf)
-- `ortaokul` - Ortaokul (5-8. sınıf)
-- `lise` - Lise (9-12. sınıf)
-
-## 📝 Notlar
-
-- İlk çalıştırmada FAISS indeksi otomatik oluşturulur (~30-60 saniye)
-- İndeks `faiss_index/` klasöründe saklanır
-- Chunk dosyalarını güncelledikten sonra `--recreate` kullanın
-- API limitleri için [Google AI Studio](https://ai.google.dev/pricing) sayfasına bakın
-
-## 🤝 Katkıda Bulunma
-
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/yeni-ozellik`)
-3. Commit edin (`git commit -am 'Yeni özellik eklendi'`)
-4. Push edin (`git push origin feature/yeni-ozellik`)
-5. Pull Request oluşturun
+**Demo için:** [DEMO_BİLGİLENDİRME.md](DEMO_BİLGİLENDİRME.md) dosyasına bakın.
 
 ## 📄 Lisans
 
