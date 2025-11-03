@@ -117,70 +117,78 @@ def show_help():
     print("─"*70)
 
 # --- GRAPH NODES ---
-def classify_query(user_msg: str) -> str:
-    """Classify user query to decide if retrieval is needed."""
-    user_msg_lower = user_msg.lower().strip()
+def classify_query_with_llm(llm: ChatGoogleGenerativeAI, user_msg: str, conversation_history: str = "") -> str:
+    """LLM ile soru tipini sınıflandır."""
     
-    # Greetings - no retrieval needed
-    greetings = ["merhaba", "selam", "günaydın", "iyi günler", "hey", "hi"]
-    if any(g in user_msg_lower for g in greetings) and len(user_msg_lower) < 20:
-        return "greeting"
-    
-    # Thanks - no retrieval needed
-    thanks = ["teşekkür", "sağol", "eyv", "tşk"]
-    if any(t in user_msg_lower for t in thanks):
-        return "thanks"
-    
-    # Identity questions - no retrieval needed
-    identity = ["sen kimsin", "kim olduğun", "adın ne", "ne yapıyorsun", "ne işe yarar"]
-    if any(i in user_msg_lower for i in identity):
-        return "identity"
-    
-    # Goodbye - no retrieval needed
-    goodbye = ["görüşürüz", "hoşçakal", "bay", "güle güle"]
-    if any(g in user_msg_lower for g in goodbye):
-        return "goodbye"
-    
-    # Everything else needs retrieval (school-related questions)
-    return "question"
+    classification_prompt = f"""Sen bir soru sınıflandırıcısın. Kullanıcının mesajını analiz et ve TEK KELİME ile yanıt ver.
 
-def router_node(state: ChatState) -> dict:
-    """Route to retrieval or direct LLM based on query type."""
+SINIFLAR:
+- greeting: Selamlaşma (merhaba, selam, günaydın)
+- thanks: Teşekkür (teşekkür ederim, sağol)
+- identity: Kimlik sorusu (sen kimsin, ne yapıyorsun)
+- goodbye: Veda (hoşçakal, görüşürüz)
+- followup: Önceki yanıtla ilgili takip sorusu (kaç saat, ne zaman, hangi gün - çok kısa)
+- question: Okul hakkında YENİ soru (retrieval gerekli)
+
+ÖRNEKLER:
+Kullanıcı: "Merhaba" → greeting
+Kullanıcı: "Teşekkürler" → thanks
+Kullanıcı: "Kaç saat?" (önceki: "Matematik dersi var") → followup
+Kullanıcı: "manevi eğitim var mı" → question
+Kullanıcı: "yarışmalara katılıyor musunuz" → question
+
+SON KONUŞMA: {conversation_history if conversation_history else "Yok"}
+KULLANICI: "{user_msg}"
+
+SINIF:"""
+    
+    response = llm.invoke([HumanMessage(content=classification_prompt)])
+    classification = response.content.strip().lower()
+    
+    # Fallback: Eğer LLM beklenmeyen bir şey döndürürse
+    valid_classes = ["greeting", "thanks", "identity", "goodbye", "followup", "question"]
+    if classification not in valid_classes:
+        classification = "question"  # Güvenli taraf: retrieval yap
+    
+    print(f"🤖 DEBUG - LLM Classification: '{user_msg}' → {classification}")
+    return classification
+
+def router_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
+    """Route to retrieval or direct LLM based on query type - LLM ile akıllı sınıflandırma."""
     if not state.get("messages"):
         return {"context": ""}
     
-    # Get last user message and check conversation history
+    # Get last user message and conversation context
     last_user_msg = None
-    has_recent_context = False
+    conversation_context = ""
     
     messages = state.get("messages", [])
     for i, msg in enumerate(reversed(messages)):
         if isinstance(msg, HumanMessage) and last_user_msg is None:
             last_user_msg = msg.content
-        # Check if there's a recent AI response (within last 2 messages)
-        if isinstance(msg, AIMessage) and i < 2:
-            # If AI just responded, user might be asking follow-up
-            has_recent_context = True
-            break
+        # Get last 2 messages for context
+        if i < 4:  # Son 4 mesaj (2 soru-cevap çifti)
+            if isinstance(msg, AIMessage):
+                conversation_context = f"AI: {msg.content[:100]}... " + conversation_context
+            elif isinstance(msg, HumanMessage) and msg.content != last_user_msg:
+                conversation_context = f"User: {msg.content} " + conversation_context
     
     if not last_user_msg:
         return {"context": ""}
     
-    # Classify query
-    query_type = classify_query(last_user_msg)
+    # LLM ile sınıflandır
+    query_type = classify_query_with_llm(llm, last_user_msg, conversation_context)
     
-    # If not a question, skip retrieval
-    if query_type != "question":
+    # Retrieval gerekmeyenler
+    if query_type in ["greeting", "thanks", "identity", "goodbye"]:
         return {"context": ""}  # Empty context, LLM will use general knowledge
     
-    # Check if it's a short follow-up question (likely referring to previous context)
-    is_short_followup = len(last_user_msg.strip()) < 30 and has_recent_context
-    
-    if is_short_followup:
-        # Keep existing context, don't retrieve again
+    # Takip sorusu - mevcut context'i koru
+    if query_type == "followup":
+        print(f"🔄 DEBUG - Follow-up detected by LLM, skipping retrieval: '{last_user_msg}'")
         return {}  # Don't change context, LLM will use conversation history
     
-    # For new questions, mark that retrieval is needed
+    # Yeni soru - retrieval gerekli
     return {"context": "NEEDS_RETRIEVAL"}
 
 def retrieve_node(state: ChatState) -> dict:
@@ -211,9 +219,17 @@ def retrieve_node(state: ChatState) -> dict:
         silent=True
     )
     
+    # DEBUG: Print retrieval results
+    print(f"\n🔍 DEBUG - Retrieved {len(retrieved_docs)} docs for query: '{last_user_msg}'")
+    print(f"📊 DEBUG - Levels filter: {state.get('levels', [])}")
+    if retrieved_docs:
+        for i, (doc, score) in enumerate(retrieved_docs[:2], 1):  # İlk 2 sonuç
+            print(f"   #{i} [{doc.metadata.get('level')}] Score: {score:.3f} - {doc.metadata.get('title', 'N/A')}")
+    
     # Format context
     if not retrieved_docs:
         context = "Bilgi bulunamadı."
+        print("⚠️  DEBUG - No documents found!")
     else:
         context_parts = []
         for i, (doc, score) in enumerate(retrieved_docs, 1):
@@ -222,6 +238,7 @@ def retrieve_node(state: ChatState) -> dict:
             content = doc.metadata.get('original_content', doc.page_content)
             context_parts.append(f"[{level}] {title}\n{content}")
         context = "\n\n---\n\n".join(context_parts)
+        print(f"✅ DEBUG - Context created ({len(context)} chars)")
     
     # Return context to be used by LLM (store in state for next node)
     # Don't add to messages, just pass it through state
@@ -299,8 +316,8 @@ class ChatSession:
         # Create graph
         workflow = StateGraph(ChatState)
         
-        # Add nodes
-        workflow.add_node("router", router_node)  # New: classify query first
+        # Add nodes - pass llm to router for classification
+        workflow.add_node("router", lambda state: router_node(state, self.llm))
         workflow.add_node("retrieve", retrieve_node)
         workflow.add_node("llm", lambda state: llm_node(state, self.llm))
         
