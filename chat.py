@@ -31,7 +31,7 @@ def initialize_chat_model() -> ChatGoogleGenerativeAI:
     return ChatGoogleGenerativeAI(
         model=CHAT_MODEL,
         google_api_key=google_api_key,
-        
+        temperature=0.4,  # Tutarlı ama doğal yanıtlar için (0.0=deterministik, 1.0=yaratıcı)
     )
 
 def format_context(documents: list) -> str:
@@ -117,10 +117,80 @@ def show_help():
     print("─"*70)
 
 # --- GRAPH NODES ---
+def classify_query(user_msg: str) -> str:
+    """Classify user query to decide if retrieval is needed."""
+    user_msg_lower = user_msg.lower().strip()
+    
+    # Greetings - no retrieval needed
+    greetings = ["merhaba", "selam", "günaydın", "iyi günler", "hey", "hi"]
+    if any(g in user_msg_lower for g in greetings) and len(user_msg_lower) < 20:
+        return "greeting"
+    
+    # Thanks - no retrieval needed
+    thanks = ["teşekkür", "sağol", "eyv", "tşk"]
+    if any(t in user_msg_lower for t in thanks):
+        return "thanks"
+    
+    # Identity questions - no retrieval needed
+    identity = ["sen kimsin", "kim olduğun", "adın ne", "ne yapıyorsun", "ne işe yarar"]
+    if any(i in user_msg_lower for i in identity):
+        return "identity"
+    
+    # Goodbye - no retrieval needed
+    goodbye = ["görüşürüz", "hoşçakal", "bay", "güle güle"]
+    if any(g in user_msg_lower for g in goodbye):
+        return "goodbye"
+    
+    # Everything else needs retrieval (school-related questions)
+    return "question"
+
+def router_node(state: ChatState) -> dict:
+    """Route to retrieval or direct LLM based on query type."""
+    if not state.get("messages"):
+        return {"context": ""}
+    
+    # Get last user message and check conversation history
+    last_user_msg = None
+    has_recent_context = False
+    
+    messages = state.get("messages", [])
+    for i, msg in enumerate(reversed(messages)):
+        if isinstance(msg, HumanMessage) and last_user_msg is None:
+            last_user_msg = msg.content
+        # Check if there's a recent AI response (within last 2 messages)
+        if isinstance(msg, AIMessage) and i < 2:
+            # If AI just responded, user might be asking follow-up
+            has_recent_context = True
+            break
+    
+    if not last_user_msg:
+        return {"context": ""}
+    
+    # Classify query
+    query_type = classify_query(last_user_msg)
+    
+    # If not a question, skip retrieval
+    if query_type != "question":
+        return {"context": ""}  # Empty context, LLM will use general knowledge
+    
+    # Check if it's a short follow-up question (likely referring to previous context)
+    is_short_followup = len(last_user_msg.strip()) < 30 and has_recent_context
+    
+    if is_short_followup:
+        # Keep existing context, don't retrieve again
+        return {}  # Don't change context, LLM will use conversation history
+    
+    # For new questions, mark that retrieval is needed
+    return {"context": "NEEDS_RETRIEVAL"}
+
 def retrieve_node(state: ChatState) -> dict:
     """Retrieve relevant documents based on last user message."""
+    # Check if retrieval is needed (router marks it)
+    if state.get("context") != "NEEDS_RETRIEVAL":
+        return {}  # Skip retrieval, keep existing context
+    
     if not state.get("messages"):
-        return {"context": ""}  # Return default empty context
+        return {"context": ""}
     
     # Get last user message
     last_user_msg = None
@@ -158,73 +228,60 @@ def retrieve_node(state: ChatState) -> dict:
     return {"context": context}
 
 def llm_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
-    """Generate response using LLM with context."""
+    """Generate response using LLM with context and full conversation history."""
     if not state.get("messages"):
         return {}
     
-    # Get last user message
-    user_msg = None
-    for msg in reversed(state["messages"]):
-        if isinstance(msg, HumanMessage):
-            user_msg = msg.content
-            break
-    
-    if not user_msg:
-        return {}
-    
     # Get context from state (set by retrieve_node)
-    context = state.get("context", "Bilgi bulunamadı.")
+    context = state.get("context", "")
     
     # Build system prompt
     level_info = ", ".join([get_level_display_name(l) for l in state.get("levels", [])]) if state.get("levels") else "Henüz seçilmedi"
     
-    system_prompt = f"""Sen Çözüm Eğitim Kurumları için tasarlanmış yapay zeka destekli bir veli asistanısın.
-Görevin: Velilere okul hakkında doğru, net ve samimi bilgi vermek.
+    system_prompt = f"""Sen Çözüm Eğitim Kurumları'nın veli asistanısın. Seçili kademeler: {level_info}
 
 KURALLAR:
-1. Yanıtlarını SADECE sağlanan BAĞLAM'daki bilgilere dayandır
-2. Yanıtlarında KESİNLİKLE uydurma yapma
-3. Asla tahmin etme veya uydurma
-4. Profesyonel ve samimi bir üslup kullan
+1. SADECE BAĞLAM'daki bilgileri kullan, asla uydurma
+2. Profesyonel ama samimi ol ("siz" diye hitap et)
+3. Yanıt uzunluğu soruya göre değişebilir:
+   - Basit sorular (merhaba, teşekkür): 1 cümle
+   - Genel sorular (okul hakkında): 2-3 cümle + liste
+   - Detaylı sorular (program, eğitim): Tüm ilgili bilgiyi ver, BAĞLAM'dan kopyala
+4. Gereksiz tekrar yapma, özlü ol ama eksik bırakma
+5. TAKIP SORULARI: Eğer önceki yanıtınla ilgili soru sorulursa (örn: "kaç saat?", "peki şu?"):
+   - Önceki konuşma geçmişini kullan
+   - Sadece sorulan spesifik bilgiyi ver
 
-6. Kullanıcıya hitap ederken: "siz", "sizlere", "istiyorsanız" gibi saygılı ifadeler
-7. Yanıtları 2-5 cümle ile sınırla, özet ver
+ÖRNEKLER:
 
+Veli: "İngilizce eğitimi nasıl?"
+Asistan: "İlkokulda İngilizce eğitimi Cambridge programı ile haftada 12 saat Main Course ve 2 saat Think&Talk dersi şeklinde verilmektedir. Dil Duşu yöntemi ile erken yaşta dil edinimi desteklenmektedir."
 
-ŞU ANDA SEÇİLİ KADEMELER: {level_info}
+Veli: "Okul hakkında bilgi istiyorum"
+Asistan: "Okulumuz modern bir eğitim anlayışı ile öğrenci gelişimine odaklanmaktadır. Size hangi konuda detaylı bilgi verebilirim? • Eğitim programları • İngilizce eğitimi • Sosyal aktiviteler • Ücretler • Servis hizmetleri"
 
-GENEL SORULAR İÇİN REHBERLİK:
-- Eğer soru ÇOK GENEL ise (örn: "okul hakkında bilgi", "okulunuzu anlatır mısınız"):
-  → BAĞLAM'dan 1-2 ilginç bilgi ver (örn: eğitim anlayışı, özellikler)
-  → MUTLAKA bu listeyi göster:
-  
-  "Size daha detaylı hangi konuda bilgi verebilirim?
-  • Eğitim programları ve müfredat
-  • İngilizce ve yabancı dil eğitimi  
-  • Sosyal aktiviteler ve kulüpler
-  • Ücretler ve kayıt işlemleri
-  • Servis ve yemek hizmetleri"
+Veli: "Merhaba"
+Asistan: "Merhaba! Ben Çözüm Eğitim Kurumları'nın veli asistanıyım. Size nasıl yardımcı olabilirim?"
 
-KADEME YÖNETİMİ:
-- Eğer kullanıcı seçili OLMAYAN bir kademe hakkında soru sorarsa:
-  → Kibarca sor: "Şu an {level_info} için bilgi verebiliyorum. [İstenenKademe] hakkında da bilgi almak ister misiniz?"
-- Kullanıcı EVET derse → "Harika! [İstenenKademe] bilgilerini de ekledim. Sorunuzu tekrar sorabilirsiniz." de
-  VE `#KADEME_EKLE:[kademe_adi]#` tag'i ekle (kullanıcı görmez)
+Veli: "Teşekkür ederim"
+Asistan: "Rica ederim! Başka sorunuz olursa çekinmeyin."
 
-Özel Tag Formatı:
-- #KADEME_EKLE:anaokulu# → Anaokulu ekle
-- #KADEME_EKLE:lise# → Lise ekle
-- Tag'i yanıtın EN SONUNA ekle, kullanıcı görmeyecek
+KADEME DEĞİŞİKLİĞİ:
+- Farklı kademe sorulursa: "Şu an {level_info} için bilgi verebiliyorum. [Kademe] hakkında da bilgi almak ister misiniz?"
+- EVET denirse: "Harika! [Kademe] bilgilerini ekledim. #KADEME_EKLE:[kademe]#"
 
-BAĞLAM:
-{context}
-
-VELİNİN SORUSU: {user_msg}
-
-YANITINIZ (samimi, kısa ve net):"""
+---
+BAĞLAM: {context if context else "Genel sohbet, okula özgü bilgi gerekmiyor."}"""
     
-    # Invoke LLM with single formatted message (Gemini prefers this)
-    response = llm.invoke([HumanMessage(content=system_prompt)])
+    # Pass FULL conversation history + system prompt
+    # This allows LLM to see previous messages for follow-up questions
+    messages = [
+        SystemMessage(content=system_prompt),
+        *state["messages"]  # Include ALL previous messages (HumanMessage and AIMessage)
+    ]
+    
+    # Invoke LLM with complete conversation history
+    response = llm.invoke(messages)
     
     return {"messages": [AIMessage(content=response.content)]}
 
@@ -243,11 +300,13 @@ class ChatSession:
         workflow = StateGraph(ChatState)
         
         # Add nodes
+        workflow.add_node("router", router_node)  # New: classify query first
         workflow.add_node("retrieve", retrieve_node)
         workflow.add_node("llm", lambda state: llm_node(state, self.llm))
         
-        # Add edges - simple flow for now
-        workflow.add_edge(START, "retrieve")
+        # Add edges - router first, then conditional retrieval
+        workflow.add_edge(START, "router")
+        workflow.add_edge("router", "retrieve")
         workflow.add_edge("retrieve", "llm")
         workflow.add_edge("llm", END)
         
