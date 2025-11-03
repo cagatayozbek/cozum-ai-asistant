@@ -70,14 +70,17 @@ GOOGLE_API_KEY = "AIzaSy..."
 Deploy tamamlandıktan sonra aşağıdakileri test edin:
 
 1. **Uygulama açılıyor mu?**
+
    - ✅ Başlık ve sidebar görünüyor
    - ✅ Kademe seçimi çalışıyor
 
 2. **Chat çalışıyor mu?**
+
    - ✅ Kademe seç → Soru sor → Yanıt geliyor
    - ✅ "Merhaba" → Hızlı yanıt veriyor
 
 3. **FAISS index yüklendi mi?**
+
    - ✅ İlk soruda biraz gecikme normal (index yükleniyor)
    - ✅ Sonraki sorular hızlı
 
@@ -91,6 +94,7 @@ Deploy tamamlandıktan sonra aşağıdakileri test edin:
 ### Sorun 1: "API key not found"
 
 **Çözüm:**
+
 1. Settings > Secrets'a git
 2. GOOGLE_API_KEY'i ekle
 3. App'i yeniden başlat (Reboot)
@@ -98,6 +102,7 @@ Deploy tamamlandıktan sonra aşağıdakileri test edin:
 ### Sorun 2: "Module 'streamlit' not found"
 
 **Çözüm:**
+
 1. `requirements.txt` dosyasında `streamlit==1.39.0` var mı kontrol et
 2. Yoksa ekle ve commit/push yap
 3. Streamlit Cloud otomatik yeniden deploy eder
@@ -105,6 +110,7 @@ Deploy tamamlandıktan sonra aşağıdakileri test edin:
 ### Sorun 3: FAISS Index Hatası
 
 **Çözüm:**
+
 1. `documents/` klasörünün GitHub'da olduğundan emin ol
 2. `.gitignore` dosyasında `documents/` yazmadığından emin ol
 3. İlk çalıştırmada index otomatik oluşturulacak
@@ -112,10 +118,12 @@ Deploy tamamlandıktan sonra aşağıdakileri test edin:
 ### Sorun 4: Yavaş Yanıtlar
 
 **Beklenen Davranış:**
+
 - İlk soru: 5-10 saniye (FAISS index yükleniyor)
 - Sonraki sorular: 2-3 saniye
 
 **Eğer hep yavaşsa:**
+
 - Gemini API rate limit'e takılıyor olabilir
 - Logs'u kontrol edin (Settings > Logs)
 
@@ -164,6 +172,7 @@ Deploy etmeden önce kontrol edin:
 Streamlit Cloud ücretsiz plan `your-app.streamlit.app` URL'i verir.
 
 Özel domain için:
+
 1. Streamlit Cloud'da domain ayarlarını aç
 2. DNS CNAME kaydı ekle
 3. SSL sertifikası otomatik
@@ -171,8 +180,9 @@ Streamlit Cloud ücretsiz plan `your-app.streamlit.app` URL'i verir.
 ## 📱 Mobil Uyumluluk
 
 Streamlit otomatik responsive tasarım sağlar:
+
 - ✅ Telefon
-- ✅ Tablet  
+- ✅ Tablet
 - ✅ Desktop
 
 Ekstra işlem gerekmez!
@@ -180,12 +190,14 @@ Ekstra işlem gerekmez!
 ## 💰 Maliyet
 
 **Streamlit Community Cloud:**
+
 - ✅ Ücretsiz
 - ✅ 1 GB RAM
 - ✅ Sınırsız app
 - ✅ Public repos için
 
 **Eğer private repo veya daha fazla kaynak gerekiyorsa:**
+
 - Streamlit Cloud Teams (ücretli)
 - Veya kendi sunucuda Docker ile deploy
 
@@ -194,6 +206,7 @@ Ekstra işlem gerekmez!
 Uygulama linki: `https://your-app.streamlit.app`
 
 Kuruma gönderirken:
+
 - ✅ Link'i paylaşın
 - ✅ DEMO_BİLGİLENDİRME.md'yi gönderin
 - ✅ Test senaryolarını çalıştırmalarını isteyin

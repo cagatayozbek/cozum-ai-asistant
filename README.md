@@ -2,7 +2,7 @@
 
 AI destekli veli asistanı - Okul programları, etkinlikler ve eğitim hakkında anında yanıt.
 
-**🌐 [Demo'yu Deneyin →](https://cozum-veli-asistani.streamlit.app)** *(Deployment sonrası güncellenecek)*
+**🌐 [Demo'yu Deneyin →](https://cozum-veli-asistani.streamlit.app)** _(Deployment sonrası güncellenecek)_
 
 ## ✨ Özellikler
 
@@ -83,6 +83,7 @@ streamlit run app.py
 ```
 
 **Özellikler:**
+
 - 📱 Responsive tasarım (mobil uyumlu)
 - 🎯 Sidebar'dan kademe seçimi
 - 💬 Chat interface ile doğal sohbet
@@ -98,6 +99,7 @@ python chat.py
 ```
 
 **Komutlar:**
+
 - `/help` - Yardım
 - `/seviye` - Kademe değiştir
 - `/temizle` - Geçmişi sil
@@ -163,6 +165,7 @@ python chat.py
 ```
 
 **Akıllı Özellikler:**
+
 - ✅ Selamlaşma/teşekkür → FAISS atla (hız++)
 - ✅ Kısa takip soruları → Önceki context kullan
 - ✅ Full conversation history → LLM'e geçir
