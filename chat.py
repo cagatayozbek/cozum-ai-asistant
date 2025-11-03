@@ -255,7 +255,7 @@ def llm_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
     # Build system prompt
     level_info = ", ".join([get_level_display_name(l) for l in state.get("levels", [])]) if state.get("levels") else "Henüz seçilmedi"
     
-    system_prompt = f"""Sen Çözüm Eğitim Kurumları'nın veli asistanısın. Seçili kademeler: {level_info}
+    system_prompt = f"""Sen, Çözüm Eğitim Kurumları'nın veli asistanısın. Seçili kademeler: {level_info}
 
 KURALLAR:
 1. SADECE BAĞLAM'daki bilgileri kullan, asla uydurma
