@@ -15,7 +15,7 @@ from retriever import get_retrieved_documents, SUPPORTED_LEVELS
 import traceback
 import re
 # --- CONFIGURATION ---
-CHAT_MODEL = "gemini-2.5-flash"
+CHAT_MODEL = "gemini-2.0-flash-lite"
 
 # --- STATE SCHEMA (TypedDict for LangGraph) ---
 class ChatState(TypedDict):
