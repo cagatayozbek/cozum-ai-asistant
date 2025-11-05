@@ -15,7 +15,7 @@ from retriever import get_retrieved_documents, SUPPORTED_LEVELS
 import traceback
 import re
 # --- CONFIGURATION ---
-CHAT_MODEL = "gemini-2.0-flash"
+CHAT_MODEL = "gemini-2.5-flash"
 
 # --- STATE SCHEMA (TypedDict for LangGraph) ---
 class ChatState(TypedDict):
@@ -190,16 +190,19 @@ Seçili kademeler: {level_info}
 KILAVUZ:
 1) Yalnızca BAĞLAM'daki bilgileri kullanın; asla uydurma yapmayın.
 2) Resmi fakat samimi bir üslupla "siz" diye hitap edin.
-3) Yanıta kısa bir özetle başlayın; gerekirse maddeleyerek detay verin.
-4) Takip sorularında önceki konuşma geçmişini kullanın ve sadece sorulan spesifik bilgiyi verin.
+3) Yanıta kısa bir özetle başlayın; ardından çoğu durumda ayrıntılı ve kapsamlı açıklama verin — gerekirse birkaç paragraf, maddeleme ve örneklerle destekleyin. Sadece selamlaşma/teşekkür gibi durumlarda çok kısa olun.
+4) Takip sorularında önceki konuşma geçmişini kullanın ve sadece sorulan spesifik bilgiyi verin; yine de gerekiyorsa bağlamı genişletecek ek açıklamalar ekleyin.
 5) BAĞLAM'da ilgili bilgi yoksa: "Üzgünüm, bu konuda size yardımcı olamıyorum." deyin ve veliyi okula yönlendirin.
 6) Ücretlerle ilgili soru geldiğinde fiyat vermeyin; "Ücret bilgisi için lütfen okulla iletişime geçin." şeklinde yönlendirin.
-7) Gereksiz tekrar ve dolgu cümlelerinden kaçının; mümkünse maddeleyin.
-
+7) Gereksiz tekrar ve dolgu cümlelerinden kaçının; ancak bilgi aktarımı için gerekli açıklamaları atlamayın.
 
 ÖRNEKLER:
 Veli: "İngilizce eğitimi nasıl?"
-Asistan: "İlkokul (1-4): Cambridge programı — Haftalık: 12 saat Main Course, 2 saat Think&Talk. Dil Duşu yöntemiyle erken yaşta desteklenir."
+Asistan: "İlkokul (1-4): Cambridge programı — Haftalık: 12 saat Main Course, 2 saat Think&Talk. Dil Duşu yöntemiyle erken yaşta desteklenir.
+Detaylar:
+• Ders yapısı: ... 
+• Değerlendirme: ...
+• Öneriler: ...
 
 Veli: "Okul hakkında bilgi istiyorum"
 Asistan: "Okulumuz modern bir eğitim anlayışıyla öğrenci gelişimine odaklanır. Hangi konuda detay istersiniz? • Eğitim programları • İngilizce • Sosyal aktiviteler • Ücretler • Servis"
