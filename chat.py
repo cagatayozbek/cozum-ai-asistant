@@ -51,37 +51,23 @@ def get_level_display_name(level: str) -> str:
 QueryType = Literal["casual", "followup", "question"]
 
 # --- GRAPH NODES ---
-def classify_query_with_llm(llm: ChatGoogleGenerativeAI, user_msg: str, recent_messages: list[BaseMessage]) -> QueryType:
-    """LLM ile soru tipini sınıflandır - 3 kategori: casual, followup, question."""
-    
-    # Build context from last 3 messages (exclude current one)
-    # TAM MESAJI AL - Kesme yok! Uzun AI yanıtları için kritik
-    context_parts = []
-    for msg in recent_messages[-3:]:
-        msg_type = "User" if isinstance(msg, HumanMessage) else "AI"
-        context_parts.append(f"{msg_type}: {msg.content}")
-    
-    conversation_history = "\n".join(context_parts) if context_parts else "İlk mesaj - followup olamaz"
+def classify_query_with_llm(llm: ChatGoogleGenerativeAI, user_msg: str) -> QueryType:
+    """LLM ile soru tipini sınıflandır - 2 kategori: casual, question."""
     
     classification_prompt = f"""Classify this message into ONE category:
 - casual: Selamlaşma, teşekkür, veda, kimlik sorusu (merhaba, teşekkürler, hoşçakal, sen kimsin)
-- followup: Önceki yanıta bağımlı takip sorusu (tek başına anlamsız)
-- question: Okul hakkında bağımsız yeni soru (retrieval gerekli)
+- question: Okul hakkında herhangi bir soru (retrieval gerekli)
 
-RECENT CONTEXT:
-{conversation_history}
+MESSAGE: "{user_msg}"
 
-CURRENT MESSAGE: "{user_msg}"
-
-KEY TEST: "Bu mesaj önceki yanıt olmadan anlamlı mı?"
-→ Selamlaşma/teşekkür/veda = casual
-→ Kısa/belirsiz + önceki yanıta bağlı = followup
-→ Spesifik okul sorusu = question
+KILAVUZ:
+→ Selamlaşma/teşekkür/veda/kimlik = casual
+→ Okul/eğitim hakkında herhangi bir soru = question
 
 EXAMPLES:
 "Merhaba" / "Teşekkürler" / "Sen kimsin?" → casual
-"Kaç saat?" (after program discussion) → followup
-"Ücret ne kadar?" (after service discussion) → followup
+"Kaç saat?" → question
+"Ücret ne kadar?" → question
 "manevi eğitim var mı" → question
 "İngilizce eğitimi nasıl?" → question
 
@@ -91,14 +77,14 @@ Return ONLY the category name:"""
     classification = response.content.strip().lower()
     
     # Validate and fallback
-    valid_classes: list[QueryType] = ["casual", "followup", "question"]
+    valid_classes: list[QueryType] = ["casual", "question"]
     if classification not in valid_classes:
         classification = "question"  # Güvenli taraf: retrieval yap
     
     return classification
 
 def router_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> Command[Literal["retrieve", "llm"]]:
-    """Route to retrieval or direct LLM - Command pattern ile state update + routing."""
+    """Route to retrieval or direct LLM - Command pattern."""
     messages = state.get("messages", [])
     
     if not messages:
@@ -114,19 +100,14 @@ def router_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> Command[Litera
     if not last_user_msg:
         return Command(update={"context": ""}, goto="llm")
     
-    # Pass recent message history to classifier (exclude current message for context)
-    recent_messages = messages[:-1] if len(messages) > 1 else []
-    query_type = classify_query_with_llm(llm, last_user_msg, recent_messages)
+    # Classify query type (casual vs question)
+    query_type = classify_query_with_llm(llm, last_user_msg)
     
-    # Casual conversation (selamlaşma, teşekkür, veda, kimlik) - direkt LLM'e git
+    # Casual conversation (selamlaşma, teşekkür, veda) - direkt LLM'e git
     if query_type == "casual":
         return Command(update={"context": ""}, goto="llm")
     
-    # Takip sorusu - mevcut context'i koru, direkt LLM'e git
-    if query_type == "followup":
-        return Command(goto="llm")  # Keep existing context
-    
-    # Yeni soru - retrieval gerekli
+    # Question - retrieval gerekli
     return Command(update={"context": "NEEDS_RETRIEVAL"}, goto="retrieve")
 
 def retrieve_node(state: ChatState) -> dict:
@@ -184,25 +165,22 @@ def llm_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
     # Build system prompt
     level_info = ", ".join([get_level_display_name(l) for l in state.get("levels", [])]) if state.get("levels") else "Henüz seçilmedi"
     
-    system_prompt = f"""Siz Çözüm Eğitim Kurumları'nın veli asistanısınız.
+    system_prompt = f"""Sen, Çözüm Eğitim Kurumları'nın veli asistanısınız.
 Seçili kademeler: {level_info}
 
 KILAVUZ:
 1) Yalnızca BAĞLAM'daki bilgileri kullanın; asla uydurma yapmayın.
 2) Resmi fakat samimi bir üslupla "siz" diye hitap edin.
-3) Yanıta kısa bir özetle başlayın; ardından çoğu durumda ayrıntılı ve kapsamlı açıklama verin — gerekirse birkaç paragraf, maddeleme ve örneklerle destekleyin. Sadece selamlaşma/teşekkür gibi durumlarda çok kısa olun.
-4) Takip sorularında önceki konuşma geçmişini kullanın ve sadece sorulan spesifik bilgiyi verin; yine de gerekiyorsa bağlamı genişletecek ek açıklamalar ekleyin.
+3) Yanıta kısa bir özetle başlayın; gerekirse maddeleyerek detay verin. 
+4) Takip sorularında önceki konuşma geçmişini kullanın ve sadece sorulan spesifik bilgiyi verin.
 5) BAĞLAM'da ilgili bilgi yoksa: "Üzgünüm, bu konuda size yardımcı olamıyorum." deyin ve veliyi okula yönlendirin.
 6) Ücretlerle ilgili soru geldiğinde fiyat vermeyin; "Ücret bilgisi için lütfen okulla iletişime geçin." şeklinde yönlendirin.
-7) Gereksiz tekrar ve dolgu cümlelerinden kaçının; ancak bilgi aktarımı için gerekli açıklamaları atlamayın.
+7) Gereksiz tekrar ve dolgu cümlelerinden kaçının; mümkünse maddeleyin.
+
 
 ÖRNEKLER:
 Veli: "İngilizce eğitimi nasıl?"
-Asistan: "İlkokul (1-4): Cambridge programı — Haftalık: 12 saat Main Course, 2 saat Think&Talk. Dil Duşu yöntemiyle erken yaşta desteklenir.
-Detaylar:
-• Ders yapısı: ... 
-• Değerlendirme: ...
-• Öneriler: ...
+Asistan: "İlkokul (1-4): Cambridge programı — Haftalık: 12 saat Main Course, 2 saat Think&Talk. Dil Duşu yöntemiyle erken yaşta desteklenir."
 
 Veli: "Okul hakkında bilgi istiyorum"
 Asistan: "Okulumuz modern bir eğitim anlayışıyla öğrenci gelişimine odaklanır. Hangi konuda detay istersiniz? • Eğitim programları • İngilizce • Sosyal aktiviteler • Ücretler • Servis"
@@ -210,7 +188,7 @@ Asistan: "Okulumuz modern bir eğitim anlayışıyla öğrenci gelişimine odakl
 Veli: "Merhaba"
 Asistan: "Merhaba! Ben Çözüm Eğitim Kurumları'nın veli asistanıyım. Size nasıl yardımcı olabilirim?"
 
-BAĞLAM: {context if context else "Genel sohbet; okula özgü bilgi gerekmiyor."}"""
+"""
     
     # Pass FULL conversation history + system prompt
     # This allows LLM to see previous messages for follow-up questions
