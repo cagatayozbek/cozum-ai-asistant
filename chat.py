@@ -10,10 +10,10 @@ import traceback
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain.agents import create_agent
+from langchain.tools import tool
 from langgraph.checkpoint.memory import MemorySaver
 
-from tools import AVAILABLE_TOOLS
-from retriever import SUPPORTED_LEVELS
+from retriever import get_retrieved_documents, SUPPORTED_LEVELS
 
 # --- CONFIGURATION ---
 CHAT_MODEL = "gemini-2.5-flash"
@@ -54,14 +54,91 @@ class ChatSession:
         self.conversation_history = []  # Sohbet geçmişi
         self.thread_id = "default"
         
+        # Tools oluştur (closure ile self.levels erişimi)
+        self.tools = self._create_tools()
+        
         # Agent'i oluştur
         self.agent = self._create_agent()
+    
+    def _create_tools(self):
+        """ChatSession'a özel tools oluştur - self.levels ile closure."""
+        
+        @tool
+        def retrieve_education_info(query: str) -> str:
+            """
+            Eğitim programları, ders saatleri, İngilizce eğitimi, spor aktiviteleri hakkında bilgi alır.
+            
+            FAISS vector store'dan semantik arama yaparak okul eğitim dokümanlarından bilgi getirir.
+            Kullanıcının seçtiği kademelerde otomatik olarak arama yapar.
+            
+            Args:
+                query: Kullanıcının sorusu (örn: "Lise İngilizce programı nasıl?")
+            
+            Returns:
+                Formatlanmış doküman içerikleri veya "Bilgi bulunamadı" mesajı
+            
+            Örnekler:
+                - "Lise programı nedir?"
+                - "İngilizce kaç saat?"
+                - "Spor faaliyetleri neler?"
+                - "Ders saatleri nasıl?"
+            """
+            # Kullanıcının seçtiği kademeleri kullan (yoksa tüm kademeler)
+            levels = self.levels if self.levels else list(SUPPORTED_LEVELS)
+            
+            # Retrieve documents from FAISS
+            retrieved_docs = get_retrieved_documents(
+                query,
+                k=4,
+                levels=levels,
+                force_recreate=False,
+                silent=True  # Production mode - suppress debug output
+            )
+            
+            # Format documents for LLM
+            if not retrieved_docs:
+                return "Bilgi bulunamadı. Bu konuda dokümanlarımızda bilgi yok."
+            
+            context_parts = []
+            for doc, score in retrieved_docs:
+                level = doc.metadata.get('level', 'N/A').upper()
+                title = doc.metadata.get('title', 'Başlıksız')
+                content = doc.page_content
+                
+                context_parts.append(
+                    f"**[{level}] {title}**\n{content}\n"
+                )
+            
+            return "\n---\n".join(context_parts)
+        
+        @tool
+        def search_school_news(query: str) -> str:
+            """
+            Okul haberleri, etkinlikler ve duyurular hakkında bilgi alır.
+            
+            Okulun web sitesinden güncel haber ve etkinlikleri arar.
+            ⚠️ Henüz aktif değil - placeholder implementasyon.
+            
+            Args:
+                query: Aranacak haber/etkinlik konusu (örn: "Bu hafta etkinlik var mı?")
+            
+            Returns:
+                Haber ve etkinlik bilgileri veya placeholder mesajı
+            
+            Örnekler:
+                - "Bu hafta etkinlik var mı?"
+                - "Son haberler neler?"
+                - "Yaklaşan etkinlikler"
+            """
+            return "🚧 Haber ve etkinlik arama özelliği henüz aktif değil. Lütfen doğrudan okul iletişim kanallarını kullanın."
+        
+        return [retrieve_education_info, search_school_news]
     
     def _create_agent(self):
         """LangChain v1 agent oluştur - create_agent API ile."""
         
         # System prompt - agent'e talimatlar
-        system_prompt = """Siz Çözüm Eğitim Kurumları'nın veli asistanısınız.
+        system_prompt = """Siz, Çözüm Eğitim Kurumları'nın veli asistanısınız.
 
 GÖREV:
 Velilerin okul hakkındaki sorularını yanıtlayın. İhtiyaç duyduğunuzda araçlarınızı kullanın.
@@ -96,7 +173,7 @@ Siz: [search_school_news aracını kullan] → Yanıt ver"""
         # LangChain v1 create_agent API
         agent = create_agent(
             model=self.llm,
-            tools=AVAILABLE_TOOLS,
+            tools=self.tools,  # ChatSession'a özel tools (closure ile levels erişimi)
             system_prompt=system_prompt,
             checkpointer=self.checkpointer,
         )
@@ -165,22 +242,45 @@ Siz: [search_school_news aracını kullan] → Yanıt ver"""
 
 # Visualization için (opsiyonel)
 if __name__ == "__main__":
-    """Test agent locally"""
-    print("🤖 Multi-Tool Agent Test\n")
+    """Test agent locally - kademe filtreleme testi"""
+    print("🤖 Multi-Tool Agent Test - Kademe Filtreleme\n")
     
     llm = initialize_chat_model()
-    session = ChatSession(llm)
-    session.set_levels(["lise"])
     
-    # Test queries
-    queries = [
-        "Merhaba",
-        "Lise İngilizce programı nasıl?",
-        "Kaç saat İngilizce var?",
-    ]
+    # Test 1: Sadece lise seçili
+    print("=" * 80)
+    print("TEST 1: Sadece LİSE kademesi seçili")
+    print("=" * 80)
+    session1 = ChatSession(llm)
+    session1.set_levels(["lise"])
     
-    for query in queries:
-        print(f"\n👤 Kullanıcı: {query}")
-        response = session.chat(query)
-        print(f"🤖 Asistan: {response}")
-        print("-" * 80)
+    response = session1.chat("İngilizce programı nasıl?")
+    print(f"\n👤 Soru: İngilizce programı nasıl?")
+    print(f"🎯 Kademe: {session1.levels}")
+    print(f"🤖 Yanıt: {response[:200]}...")
+    
+    # Test 2: Sadece anaokulu seçili
+    print("\n" + "=" * 80)
+    print("TEST 2: Sadece ANAOKULU kademesi seçili")
+    print("=" * 80)
+    session2 = ChatSession(llm)
+    session2.set_levels(["anaokulu"])
+    
+    response = session2.chat("İngilizce programı nasıl?")
+    print(f"\n👤 Soru: İngilizce programı nasıl?")
+    print(f"🎯 Kademe: {session2.levels}")
+    print(f"🤖 Yanıt: {response[:200]}...")
+    
+    # Test 3: Tüm kademeler
+    print("\n" + "=" * 80)
+    print("TEST 3: TÜM KADEMELER seçili")
+    print("=" * 80)
+    session3 = ChatSession(llm)
+    session3.set_levels(["anaokulu", "ilkokul", "ortaokul", "lise"])
+    
+    response = session3.chat("İngilizce eğitimi hakkında bilgi ver")
+    print(f"\n👤 Soru: İngilizce eğitimi hakkında bilgi ver")
+    print(f"🎯 Kademe: {session3.levels}")
+    print(f"🤖 Yanıt: {response[:300]}...")
+    
+    print("\n" + "=" * 80)
