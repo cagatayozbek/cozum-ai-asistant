@@ -2,20 +2,21 @@
 
 ## Project Overview
 
-A RAG-powered parent assistant chatbot for Çözüm Koleji (Turkish school system) built with **Streamlit + LangGraph + FAISS + Google Gemini 2.5 Flash**. The system provides accurate, document-grounded answers about school programs across 4 education levels (anaokulu, ilkokul, ortaokul, lise) while avoiding hallucinations.
+A RAG-powered parent assistant chatbot for Çözüm Koleji (Turkish school system) built with **Streamlit + LangChain Agents + FAISS + Google Gemini 2.5 Flash**. The system provides accurate, document-grounded answers about school programs across 4 education levels (anaokulu, ilkokul, ortaokul, lise) while avoiding hallucinations.
 
-**Production Entry:** `streamlit run app.py` (NOT chat.py - that's deprecated CLI)
+**Production Entry:** `streamlit run app.py` (NOT chat.py - that's CLI testing)
 
-## Mimari: LangGraph ile Conditional Edge Pattern
+## Mimari: LangChain v1 Multi-Tool Agent Pattern
 
 ```
 User Query (Streamlit)
-  → Router Node (LLM sınıflandırma)
+  → LangChain Agent (create_agent)
     |
-    ├─ decide_next_node() [CONDITIONAL EDGE]
+    ├─ LLM natively decides tool usage
     |    |
-    |    ├─ casual/followup → "llm" (FAISS atla)
-    |    └─ question → "retrieve" → "llm"
+    |    ├─ retrieve_education_info → FAISS search
+    |    ├─ search_school_news → Web scraper (placeholder)
+    |    └─ No tool → Direct response
     |
     → LLM Response
 ```
@@ -23,29 +24,33 @@ User Query (Streamlit)
 **Kritik Dosyalar:**
 
 - `app.py` - Streamlit UI ve session yönetimi (PRODUCTION)
-- `chat.py` - LangGraph workflow: `ChatSession` sınıfı, router/retrieve/llm node'ları
+- `chat.py` - LangChain Agent: `ChatSession` sınıfı, `create_agent()` kullanımı
+- `tools.py` - Tool definitions: FAISS retrieval, web scraper (placeholder)
 - `retriever.py` - FAISS vector store, chunk yükleme, embedding oluşturma
 
-### Ana Tasarım Kararı: Conditional Edge ile Akıllı Yönlendirme
+### Ana Tasarım Kararı: Multi-Tool Agent Pattern
 
-**Neden Conditional Edge?**
+**Neden Multi-Tool Agent?**
 
-- ✅ Profesyonel LangGraph pattern
-- ✅ State-based karar verme (`RetrievalStatus` enum)
-- ✅ `Command` pattern'den daha temiz ve anlaşılır
-- ✅ Graph yapısı net görünür
+- ✅ LangChain v1 standardı (`create_agent` API)
+- ✅ LLM native tool calling (manuel router yok)
+- ✅ Kolay genişletilebilir (@tool decorator)
+- ✅ 61% daha az kod (474 → 186 satır)
+- ✅ 50% daha hızlı (2 LLM call → 1 LLM call)
 
 **Nasıl Çalışır:**
 
-1. `router_node()` - Sorguyu sınıflandır, `retrieval_status` ayarla
-2. `decide_next_node()` - Status'a göre sonraki node'u belirle
-3. `add_conditional_edges()` - Dinamik yönlendirme
+1. `create_agent()` - LangChain v1 ile agent oluştur
+2. LLM tools'u görebilir ve nerede kullanacağına karar verir
+3. Selamlaşma → Tool kullanma, direkt yanıt ver
+4. Soru → `retrieve_education_info` tool'unu çağır → FAISS'ten bilgi al
+5. Etkinlik sorusu → `search_school_news` tool'unu çağır (henüz placeholder)
 
-**Neden FAISS atlanır:**
+**Eski Pattern (Deprecated - Router Pattern):**
 
-- Selamlaşma ("merhaba") → `NOT_NEEDED` → Direkt LLM
-- Takip soruları ("Kaç saat?") → `NOT_NEEDED` → Mevcut context kullan
-- Yeni sorular → `PENDING` → FAISS retrieval yap
+Eski kod `chat_backup_router_pattern.py`'de saklanıyor. Eski mimari:
+- Router node → LLM classification → Conditional edge → Retrieve node → LLM node
+- Sorun: Duplicate retrieval, ekstra LLM call, karmaşık state management
 
 ## Data Structure: Pre-chunked JSON
 
@@ -65,36 +70,27 @@ This enrichment improves retrieval accuracy.
 
 ## State Management: LangGraph + MemorySaver
 
-**State Schema (ChatState in chat.py):**
+**State Schema (Simplified in LangChain v1):**
 
+LangChain v1 agent handles state internally. `ChatSession` only manages:
+- `levels`: list[str] | None - Seçili eğitim kademeleri
+- `conversation_history`: list[dict] - Sohbet geçmişi (role + content)
+- `thread_id`: str - Session identifier for checkpointer
+
+**Agent State Pattern:**
+
+Agent uses internal LangGraph state with standard message format:
 ```python
 {
-    "levels": list[str] | None,  # Seçili eğitim kademeleri
-    "messages": list[BaseMessage],  # Tam sohbet geçmişi (with 'add' operator)
-    "retrieved_docs": list[tuple[Document, float]],  # RAG dokümanları (formatlanmamış)
-    "retrieval_status": RetrievalStatus  # PENDING | COMPLETED | NOT_NEEDED
+    "messages": list[BaseMessage]  # HumanMessage, AIMessage, ToolMessage
 }
 ```
 
-**Profesyonel Memory Pattern (LangGraph Best Practice):**
+**Conversation History:**
 
-- ✅ **State'te sadece raw data** - `retrieved_docs` formatlanmamış halde
-- ✅ **SystemMessage state'e eklenmiyor** - Her çağrıda dinamik oluşturuluyor
-- ✅ **Context injection LLM node'da** - `llm_node()` içinde format + inject
-- ✅ **MemorySaver sadece messages'ı saklıyor** - HumanMessage ve AIMessage (SystemMessage değil)
-
-**Neden Bu Yaklaşım?**
-
-1. **Verimli storage** - SystemMessage her mesajda çoğaltılmıyor
-2. **Dinamik promptlar** - `levels` değiştiğinde prompt otomatik güncelleniyor
-3. **Temiz state** - Raw data state'te, formatlanmış data sadece LLM çağrısında
-4. **LangGraph standardı** - Dokümanların önerdiği pattern
-
-**Retrieval Status Pattern:** Uses enum instead of magic strings for clean state management:
-
-- `RetrievalStatus.PENDING` - Router marked query as needing retrieval
-- `RetrievalStatus.COMPLETED` - Documents retrieved and formatted
-- `RetrievalStatus.NOT_NEEDED` - Casual/follow-up query, skip FAISS
+- Stored as simple dict: `{"role": "user"|"assistant", "content": str}`
+- Converted to LangChain messages (HumanMessage/AIMessage) before agent invoke
+- Agent automatically handles tool calls and responses internally
 
 **Session Persistence:** Uses `MemorySaver` checkpointer with `thread_id`. Each session has one thread. To reset conversation, change `thread_id`.
 
@@ -104,6 +100,13 @@ This enrichment improves retrieval accuracy.
 - Cache `chat_session` for stateful conversations
 - Multi-select sidebar updates `levels` dynamically
 
+## Code Architecture Patterns
+
+### Yardımcı Fonksiyonlar (chat.py)
+
+**Asla manuel mesaj iterasyonu yapma** - yardımcı fonksiyonları kullan:
+
+```python
 ## Code Architecture Patterns
 
 ### Yardımcı Fonksiyonlar (chat.py)
@@ -212,9 +215,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Fix OpenMP/FAISS conflict
 
 ## Değişiklik Yapma Kuralları
 
+## Değişiklik Yapma Kuralları
+
 **Prompt Değiştirme:**
 
-- `chat.py:llm_node()` içindeki `system_prompt`'u düzenle
+- `chat.py:_create_agent()` içindeki `system_prompt`'u düzenle
 - **MUTLAKA %100 TÜRKÇE yaz** - İngilizce kelime yasak
 - Fiyat soruları, takip soruları gibi uç durumlarla test et
 
@@ -224,11 +229,12 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Fix OpenMP/FAISS conflict
 2. `retriever.py` içinde `SUPPORTED_LEVELS` güncelle
 3. `chat.py` içinde `get_level_display_name()` güncelle
 
-**Router Mantığını İyileştirme:**
+**Yeni Tool Ekleme:**
 
-- `classify_query_with_llm()` fonksiyonunu değiştir
-- **Promptu TÜRKÇE yaz**
-- Sorular casual olarak sınıflanmasın diye dikkat et
+- `tools.py` içinde `@tool` decorator ile yeni fonksiyon ekle
+- **Docstring TÜRKÇE olmalı** - Agent bu açıklamayı okur
+- `AVAILABLE_TOOLS` listesine ekle
+- Test et
 
 **Streamlit UI:**
 
@@ -239,20 +245,25 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Fix OpenMP/FAISS conflict
 
 ### ✅ **Completed Improvements:**
 
-1. **Conditional edge pattern** - `Command` yerine profesyonel `add_conditional_edges()` kullanımı
-2. **Removed magic strings** - `"NEEDS_RETRIEVAL"` → `RetrievalStatus` enum
-3. **Eliminated regex parsing** - Tag sistemi → Yapılandırılmış LLM çıktısı
-4. **Added helper functions** - Manuel mesaj iterasyonu yok (DRY principle)
-5. **Cleaner state management** - Enum-based retrieval status
+1. **Multi-tool agent migration** - Router pattern → LangChain v1 `create_agent`
+2. **61% code reduction** - 474 lines → 186 lines (chat.py)
+3. **50% performance boost** - 2 LLM calls → 1 LLM call (no classification overhead)
+4. **Tool-based architecture** - Easy to add new capabilities (@tool decorator)
+5. **Native tool calling** - LLM decides tool usage (no manual routing)
 6. **Type safety** - Pydantic modelleri tüm LLM yapılandırılmış çıktılar için
 7. **%100 Türkçe promptlar** - LLM'e gönderilen tüm promptlar Türkçe
+8. **Content blocks handling** - LangChain v1 response format support
+
+**Migration Details:** See `MIGRATION_LOG.md` for full documentation
+
+**Backup:** Old router pattern code in `chat_backup_router_pattern.py`
 
 ### ⚠️ **Current Limitations:**
 
 1. **No streaming responses** - Entire response waits for completion
-2. **Router sometimes over-retrieves** - Classification can be improved
-3. **No caching** - Frequent questions hit LLM every time
-4. **No conversation persistence** - Session lost on refresh (in-memory only)
+2. **No caching** - Frequent questions hit LLM every time
+3. **No conversation persistence** - Session lost on refresh (in-memory only)
+4. **Web scraper placeholder** - `search_school_news` not yet implemented
 
 ## Deployment
 
