@@ -137,8 +137,13 @@ class ChatSession:
     def _create_agent(self):
         """LangChain v1 agent oluştur - create_agent API ile."""
         
+        # Aktif kademeleri belirle (dinamik)
+        active_levels = ', '.join(self.levels).title() if self.levels else "Tüm kademeler"
+        
         # System prompt - agent'e talimatlar
-        system_prompt = """Siz, Çözüm Eğitim Kurumları'nın veli asistanısınız.
+        system_prompt = f"""Siz, Çözüm Eğitim Kurumları'nın veli asistanısınız.
+
+AKTİF KADEMELER: {active_levels}
 
 GÖREV:
 Velilerin okul hakkındaki sorularını yanıtlayın. İhtiyaç duyduğunuzda araçlarınızı kullanın.
@@ -152,6 +157,7 @@ KURALLAR:
 2) Etkinlik/haber soruları → search_school_news aracını kullanın  
 3) Selamlaşma/teşekkür → Hiçbir araç kullanmayın, doğrudan yanıt verin
 4) Takip soruları → Sohbet geçmişini kullanın, gerekirse araçları tekrar çağırın
+5) ÖNEMLİ: Kademe değiştiğinde veya yeni bilgi istendiğinde MUTLAKA aracı tekrar çağırın
 
 ÜSLUP:
 - Resmi fakat samimi "siz" ile hitap edin
@@ -181,8 +187,20 @@ Siz: [search_school_news aracını kullan] → Yanıt ver"""
         return agent
     
     def set_levels(self, levels: list[str]):
-        """Eğitim kademelerini ayarla."""
+        """Eğitim kademelerini ayarla ve agent'i yeniden oluştur."""
+        old_levels = self.levels
         self.levels = levels
+        
+        # ✨ Agent'i yeniden oluştur (system prompt'ta kademe bilgisi var)
+        if old_levels != levels:
+            self.agent = self._create_agent()
+        
+        # Eğer kademe değiştiyse, conversation history'ye not ekle
+        if old_levels != levels and old_levels is not None:
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": f"✅ Kademe güncellendi: {', '.join(levels)}. Bundan sonraki sorularınız için sadece bu kademe(ler)den bilgi getireceğim."
+            })
     
     def clear_history(self):
         """Sohbet geçmişini temizle."""
@@ -240,47 +258,30 @@ Siz: [search_school_news aracını kullan] → Yanıt ver"""
             return "Üzgünüm, teknik bir sorun oluştu. Lütfen tekrar deneyin."
 
 
-# Visualization için (opsiyonel)
+# Test
 if __name__ == "__main__":
-    """Test agent locally - kademe filtreleme testi"""
-    print("🤖 Multi-Tool Agent Test - Kademe Filtreleme\n")
+    """Test: Kademe değişikliği senaryosu"""
+    print("🤖 Kademe Değişikliği Testi\n")
     
     llm = initialize_chat_model()
+    session = ChatSession(llm)
     
-    # Test 1: Sadece lise seçili
-    print("=" * 80)
-    print("TEST 1: Sadece LİSE kademesi seçili")
-    print("=" * 80)
-    session1 = ChatSession(llm)
-    session1.set_levels(["lise"])
+    # 1. Ortaokul
+    print("1️⃣ ORTAOKUL seçildi")
+    session.set_levels(["ortaokul"])
+    response1 = session.chat("İngilizce ders saatleri nelerdir")
+    print(f"Yanıt: {response1[:150]}...\n")
     
-    response = session1.chat("İngilizce programı nasıl?")
-    print(f"\n👤 Soru: İngilizce programı nasıl?")
-    print(f"🎯 Kademe: {session1.levels}")
-    print(f"🤖 Yanıt: {response[:200]}...")
+    # 2. Lise'ye değiştir
+    print("2️⃣ LİSE'ye değiştirildi")
+    session.set_levels(["lise"])
+    response2 = session.chat("İngilizce ders saatleri nelerdir")
+    print(f"Yanıt: {response2[:150]}...")
     
-    # Test 2: Sadece anaokulu seçili
-    print("\n" + "=" * 80)
-    print("TEST 2: Sadece ANAOKULU kademesi seçili")
-    print("=" * 80)
-    session2 = ChatSession(llm)
-    session2.set_levels(["anaokulu"])
-    
-    response = session2.chat("İngilizce programı nasıl?")
-    print(f"\n👤 Soru: İngilizce programı nasıl?")
-    print(f"🎯 Kademe: {session2.levels}")
-    print(f"🤖 Yanıt: {response[:200]}...")
-    
-    # Test 3: Tüm kademeler
-    print("\n" + "=" * 80)
-    print("TEST 3: TÜM KADEMELER seçili")
-    print("=" * 80)
-    session3 = ChatSession(llm)
-    session3.set_levels(["anaokulu", "ilkokul", "ortaokul", "lise"])
-    
-    response = session3.chat("İngilizce eğitimi hakkında bilgi ver")
-    print(f"\n👤 Soru: İngilizce eğitimi hakkında bilgi ver")
-    print(f"🎯 Kademe: {session3.levels}")
-    print(f"🤖 Yanıt: {response[:300]}...")
-    
-    print("\n" + "=" * 80)
+    # Kontrol
+    if "ortaokul" in response2.lower() and "lise" in response2.lower():
+        print("\n❌ SORUN VAR: HEM ortaokul HEM lise bilgisi var!")
+    elif "lise" in response2.lower():
+        print("\n✅ SORUN YOK: Sadece lise bilgisi var!")
+    else:
+        print("\n⚠️ BEKLENMEDIK: Ne ortaokul ne de lise bilgisi yok?")
