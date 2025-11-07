@@ -24,11 +24,11 @@ User Query (Streamlit)
 **Kritik Dosyalar:**
 
 - `app.py` - Streamlit UI ve session yönetimi (PRODUCTION)
-- `chat.py` - LangChain Agent: `ChatSession` sınıfı, `create_agent()` kullanımı
-- `tools.py` - Tool definitions: FAISS retrieval, web scraper (placeholder)
+- `chat.py` - LangChain Agent: `ChatSession` sınıfı, `create_agent()` ve tool definitions
 - `retriever.py` - FAISS vector store, chunk yükleme, embedding oluşturma
+- `tools.py` - DEPRECATED: Tools moved to chat.py (closure pattern for level filtering)
 
-### Ana Tasarım Kararı: Multi-Tool Agent Pattern
+### Ana Tasarım Kararı: Multi-Tool Agent Pattern with Closure
 
 **Neden Multi-Tool Agent?**
 
@@ -37,18 +37,21 @@ User Query (Streamlit)
 - ✅ Kolay genişletilebilir (@tool decorator)
 - ✅ 61% daha az kod (474 → 186 satır)
 - ✅ 50% daha hızlı (2 LLM call → 1 LLM call)
+- ✅ **Closure pattern** - Tools access self.levels for automatic filtering
 
 **Nasıl Çalışır:**
 
-1. `create_agent()` - LangChain v1 ile agent oluştur
-2. LLM tools'u görebilir ve nerede kullanacağına karar verir
-3. Selamlaşma → Tool kullanma, direkt yanıt ver
-4. Soru → `retrieve_education_info` tool'unu çağır → FAISS'ten bilgi al
-5. Etkinlik sorusu → `search_school_news` tool'unu çağır (henüz placeholder)
+1. `_create_tools()` - ChatSession içinde tools oluştur (closure ile self.levels erişimi)
+2. `create_agent()` - LangChain v1 ile agent oluştur
+3. LLM tools'u görebilir ve nerede kullanacağına karar verir
+4. Tool otomatik olarak kullanıcının seçtiği kademelerde arama yapar
+5. Soru → `retrieve_education_info` tool'unu çağır → FAISS'ten bilgi al
+6. Etkinlik sorusu → `search_school_news` tool'unu çağır (henüz placeholder)
 
 **Eski Pattern (Deprecated - Router Pattern):**
 
 Eski kod `chat_backup_router_pattern.py`'de saklanıyor. Eski mimari:
+
 - Router node → LLM classification → Conditional edge → Retrieve node → LLM node
 - Sorun: Duplicate retrieval, ekstra LLM call, karmaşık state management
 
@@ -73,6 +76,7 @@ This enrichment improves retrieval accuracy.
 **State Schema (Simplified in LangChain v1):**
 
 LangChain v1 agent handles state internally. `ChatSession` only manages:
+
 - `levels`: list[str] | None - Seçili eğitim kademeleri
 - `conversation_history`: list[dict] - Sohbet geçmişi (role + content)
 - `thread_id`: str - Session identifier for checkpointer
@@ -80,6 +84,7 @@ LangChain v1 agent handles state internally. `ChatSession` only manages:
 **Agent State Pattern:**
 
 Agent uses internal LangGraph state with standard message format:
+
 ```python
 {
     "messages": list[BaseMessage]  # HumanMessage, AIMessage, ToolMessage
@@ -106,7 +111,7 @@ Agent uses internal LangGraph state with standard message format:
 
 **Asla manuel mesaj iterasyonu yapma** - yardımcı fonksiyonları kullan:
 
-```python
+````python
 ## Code Architecture Patterns
 
 ### Yardımcı Fonksiyonlar (chat.py)
@@ -117,7 +122,7 @@ Agent uses internal LangGraph state with standard message format:
 get_last_user_message(messages)  # Son HumanMessage'ı çıkar
 format_retrieved_context(docs)    # Dokümanları LLM için formatla
 detect_level_mentions(llm, query) # Yapılandırılmış kademe tespiti
-```
+````
 
 ### Kademe Tespiti
 
@@ -231,9 +236,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Fix OpenMP/FAISS conflict
 
 **Yeni Tool Ekleme:**
 
-- `tools.py` içinde `@tool` decorator ile yeni fonksiyon ekle
+- `chat.py:_create_tools()` içinde yeni `@tool` decorator ile fonksiyon ekle
 - **Docstring TÜRKÇE olmalı** - Agent bu açıklamayı okur
-- `AVAILABLE_TOOLS` listesine ekle
+- **Closure avantajı** - self.levels, self.llm gibi ChatSession property'lerine erişebilirsin
+- Return listesine ekle
 - Test et
 
 **Streamlit UI:**
