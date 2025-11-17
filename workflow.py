@@ -11,6 +11,7 @@ from state_schema import ChatState
 from nodes.intent_node import intent_detection_node
 from nodes.router_node import router_node
 from nodes.retrieve_node import retrieve_node
+from nodes.compression_node import context_compression_node
 from nodes.answer_node import (
     answer_node, 
     direct_answer_node, 
@@ -29,6 +30,8 @@ def create_workflow(llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = N
     ┌────────┼────────┬─────────┐
     ↓        ↓        ↓         ↓
     retrieve  news   price    direct
+    ↓        ↓        ↓         ↓
+    compress (70% token reduction)
     ↓        ↓        ↓         ↓
     └────────┴────────┴─────────┘
              ↓
@@ -49,6 +52,7 @@ def create_workflow(llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = N
     workflow.add_node("retrieve", retrieve_node)
     workflow.add_node("search_news", search_news_node)
     workflow.add_node("price_info", price_info_node)
+    workflow.add_node("compression", context_compression_node)  # 🆕 Context compression
     workflow.add_node("direct_answer", lambda state: direct_answer_node(state, llm))
     workflow.add_node("answer", lambda state: answer_node(state, llm))
     
@@ -67,10 +71,15 @@ def create_workflow(llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = N
         }
     )
     
-    # All nodes go to answer node (except direct_answer which already answers)
-    workflow.add_edge("retrieve", "answer")
-    workflow.add_edge("search_news", "answer")
-    workflow.add_edge("price_info", "answer")
+    # All nodes go to compression first (except direct_answer)
+    workflow.add_edge("retrieve", "compression")
+    workflow.add_edge("search_news", "compression")
+    workflow.add_edge("price_info", "compression")
+    
+    # Compression goes to answer
+    workflow.add_edge("compression", "answer")
+    
+    # Direct answer bypasses compression
     workflow.add_edge("direct_answer", END)  # Direct answer goes to END
     
     # Answer node goes to END
@@ -96,11 +105,13 @@ graph TD
     router -->|price| price[Price Info Node<br/>Contact Info]
     router -->|greeting/unknown| direct[Direct Answer Node<br/>No Context]
     
-    retrieve --> answer[Answer Node<br/>LLM Response]
-    news --> answer
-    price --> answer
-    direct --> END([END])
+    retrieve --> compress[Compression Node<br/>70% Token Reduction]
+    news --> compress
+    price --> compress
     
+    compress --> answer[Answer Node<br/>LLM Response]
+    
+    direct --> END([END])
     answer --> END
     
     style intent fill:#e1f5ff
@@ -108,6 +119,7 @@ graph TD
     style retrieve fill:#e8f5e9
     style news fill:#fff3e0
     style price fill:#fce4ec
+    style compress fill:#fff9c4
     style direct fill:#f3e5f5
     style answer fill:#e0f2f1
 ```
