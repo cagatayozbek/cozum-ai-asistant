@@ -11,7 +11,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain.agents import create_agent
 from langchain.tools import tool
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
 from retriever import get_retrieved_documents, SUPPORTED_LEVELS
 
@@ -47,9 +47,9 @@ def get_level_display_name(level: str) -> str:
 class ChatSession:
     """LangChain Agent tabanlı sohbet oturumu yöneticisi."""
     
-    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: MemorySaver = None):
+    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None):
         self.llm = llm
-        self.checkpointer = checkpointer or MemorySaver()
+        self.checkpointer = checkpointer or InMemorySaver()
         self.levels = None  # Seçili eğitim kademeleri
         self.conversation_history = []  # Sohbet geçmişi
         self.thread_id = "default"

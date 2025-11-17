@@ -1,6 +1,6 @@
 import streamlit as st
 from chat import ChatSession, initialize_chat_model
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
 # Sayfa konfigürasyonu
 st.set_page_config(
@@ -42,7 +42,7 @@ with st.sidebar:
             # İlk başlatma - LLM ve checkpointer oluştur
             if st.session_state.llm is None:
                 st.session_state.llm = initialize_chat_model()
-                st.session_state.checkpointer = MemorySaver()
+                st.session_state.checkpointer = InMemorySaver()
             
             st.session_state.chat_session = ChatSession(
                 st.session_state.llm, 
