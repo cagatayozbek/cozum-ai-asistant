@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import traceback
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain.agents import create_agent
 from langchain.tools import tool
 from langgraph.checkpoint.memory import MemorySaver
@@ -208,18 +208,41 @@ Siz: [search_school_news aracını kullan] → Yanıt ver"""
         self.thread_id = f"thread_{os.urandom(8).hex()}"
     
     def chat(self, user_query: str) -> str:
-        """Kullanıcı mesajını gönder ve yanıt al."""
+        """Kullanıcı mesajını gönder ve yanıt al.
+        
+        MEMORY OPTIMIZATION: Sliding window approach
+        - Sadece son 10 mesajı LLM'e gönderir (5 user + 5 assistant)
+        - Tüm geçmiş self.conversation_history'de saklanır (UI için)
+        - Token kullanımı sabit kalır (~2000 token max)
+        """
         try:
-            # Conversation history'yi hazırla
-            messages = []
-            for msg in self.conversation_history:
+            # 🎯 SLIDING WINDOW: Sadece son 10 mesajı al (son 5 soru-cevap çifti)
+            recent_history = self.conversation_history[-10:] if len(self.conversation_history) > 10 else self.conversation_history
+            
+            # 1️⃣ Dinamik kademe bilgisi için SystemMessage oluştur
+            active_levels = ', '.join(self.levels).title() if self.levels else "Tüm kademeler"
+            system_message = SystemMessage(
+                content=f"🎯 AKTİF KADEMELER: {active_levels}\n\n"
+                        f"Kullanıcının seçtiği kademe(ler) bunlardır. Araçlar otomatik olarak bu kademelerde arama yapar."
+            )
+            
+            # 🐛 DEBUG: Show sliding window size
+            print(f"\n💬 [CHAT] Soru soruldu")
+            print(f"   Toplam geçmiş: {len(self.conversation_history)} mesaj")
+            print(f"   LLM'e gönderilen: {len(recent_history)} mesaj (sliding window)")
+            print(f"   Aktif kademeler: {self.levels}")
+            
+            # 2️⃣ Son N mesajı LangChain message formatına çevir
+            messages = [system_message]  # Başa SystemMessage ekle
+            
+            for msg in recent_history:
                 if isinstance(msg, dict):
                     if msg.get("role") == "user":
                         messages.append(HumanMessage(content=msg["content"]))
                     elif msg.get("role") == "assistant":
                         messages.append(AIMessage(content=msg["content"]))
             
-            # Yeni kullanıcı mesajını ekle
+            # 3️⃣ Yeni kullanıcı mesajını ekle
             messages.append(HumanMessage(content=user_query))
             
             # Agent'i çağır (LangChain v1 API)
