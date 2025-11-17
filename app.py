@@ -50,28 +50,33 @@ with st.sidebar:
             )
             st.session_state.chat_session.set_levels(selected_levels)
             st.session_state.onboarding_done = True
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": f"✨ Merhaba! {', '.join(selected_levels).title()} kademesi hakkında size yardımcı olabilirim. Sorularınızı sorabilirsiniz."
-            })
+            # ❌ Onboarding mesajı kaldırıldı - kullanıcı direkt soru sorsun
         else:
             # Kademe değişikliği
+            old_levels = st.session_state.chat_session.levels
             st.session_state.chat_session.set_levels(selected_levels)
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": f"✅ Kademe güncellendi: {', '.join(selected_levels).title()}"
-            })
+            
+            # Kademe değişikliği bilgilendirmesi (isteğe bağlı)
+            if old_levels != selected_levels:
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": f"✅ Kademe güncellendi: {', '.join(selected_levels).title()}"
+                })
         st.rerun()
     
     st.divider()
     
     # Yeni sohbet butonu
     if st.button("🔄 Yeni Sohbet", use_container_width=True):
-        st.session_state.chat_session = None
+        # Checkpointer'ı temizle (yeni thread ID)
+        if st.session_state.chat_session:
+            st.session_state.chat_session.clear_history()
+        
+        # UI state'i sıfırla
         st.session_state.messages = []
-        st.session_state.levels = []
-        st.session_state.onboarding_done = False
-        # LLM ve checkpointer'ı koru, sadece session'ı sıfırla
+        st.session_state.onboarding_done = False if not st.session_state.levels else True
+        
+        # NOT: chat_session ve levels'ı KORUYORUZ (kullanıcı aynı kademe ile devam edebilir)
         st.rerun()
     
     st.divider()
@@ -82,17 +87,24 @@ if not st.session_state.onboarding_done:
     # Onboarding mesajı
     st.info("👈 Lütfen sol menüden en az bir kademe seçin.")
     st.markdown("""
-    ### Nasıl Kullanılır?
+    ### 🎓 Çözüm Koleji Veli Asistanı'na Hoş Geldiniz!
     
-    1. **Sol menüden** ilgilendiğiniz kademe(leri) seçin
-    2. **Soru sorun**: "Anaokulu programı nedir?", "Lise biyoloji kaç saat?"
-    3. **Sohbet edin**: Doğal bir şekilde sorularınızı sorun
+    #### Nasıl Kullanılır?
     
-    ### Örnek Sorular:
-    - Anaokulu programı nasıl?
-    - İlkokulda kaç saat İngilizce var?
-    - Lise ve ortaokul matematik saatlerini karşılaştır
-    - Hangi kademelerde robotik kodlama var?
+    1. **Kademe Seçin** 👈 Sol menüden ilgilendiğiniz kademe(leri) seçin
+    2. **Soru Sorun** 💬 Doğal bir şekilde sorularınızı yazın
+    3. **Cevap Alın** ✅ Yapay zeka asistanınız size yardımcı olacak
+    
+    #### 📝 Örnek Sorular:
+    - *"Anaokulu programı nasıl?"*
+    - *"İlkokulda kaç saat İngilizce var?"*
+    - *"Lisede sınava hazırlık programı var mı?"*
+    - *"Spor faaliyetleri neler?"*
+    
+    #### 💡 İpuçları:
+    - Birden fazla kademe seçerek karşılaştırmalı bilgi alabilirsiniz
+    - Takip soruları sorabilirsiniz
+    - İstediğiniz zaman kademe değiştirebilirsiniz
     """)
 else:
     # Chat mesajlarını göster
