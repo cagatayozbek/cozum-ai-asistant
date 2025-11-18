@@ -151,6 +151,49 @@ def scrape_news_detail(url: str) -> dict:
 # ============================================================================
 
 
+def extract_search_keywords(query: str) -> str:
+    """
+    Kullanıcı sorgusundan anahtar kelimeleri çıkarır.
+    
+    Örnek:
+    - "yks etkinlikleri var mı?" → "yks"
+    - "geçen ay hangi etkinlikler düzenlendi?" → "" (genel arama)
+    - "lgs hazırlık kampı nedir?" → "lgs"
+    
+    Args:
+        query: Kullanıcının tam sorusu
+    
+    Returns:
+        Anahtar kelime (boş string = tüm haberler)
+    """
+    # Küçük harfe çevir
+    query_lower = query.lower()
+    
+    # Önemli anahtar kelimeler (okul-spesifik terimler)
+    important_keywords = [
+        "yks", "lgs", "tyt", "ayt",  # Sınav terimleri
+        "kod", "kodlama", "code",     # Kodlama etkinlikleri
+        "stem", "robotik", "teacherx",  # Program isimleri
+        "kamp", "gezi", "yarışma",    # Etkinlik türleri
+        "seminer", "konferans", "sunum",  # Eğitim etkinlikleri
+        "spor", "sanat", "müzik",     # Aktivite alanları
+        "başarı", "ödül", "şampiyon", # Başarı haberleri
+    ]
+    
+    # İlk bulunan anahtar kelimeyi dön
+    for keyword in important_keywords:
+        if keyword in query_lower:
+            return keyword
+    
+    # Anahtar kelime yoksa genel terimler için boş dön (tüm haberler)
+    generic_terms = ["etkinlik", "haber", "duyuru", "ne", "neler", "hangi"]
+    if any(term in query_lower for term in generic_terms):
+        return ""  # Genel arama (tüm haberler)
+    
+    # Hiçbir özel durum yoksa sorgunun kendisini dön
+    return query
+
+
 def news_search_node(state: ChatState) -> ChatState:
     """
     Kullanıcının sorusunu title parametresi olarak kullanarak
@@ -170,10 +213,18 @@ def news_search_node(state: ChatState) -> ChatState:
     print("\n📰 [NEWS SEARCH NODE] Haber araması başlıyor...")
     print(f"   🔍 Sorgu: {query}")
 
-    # Kullanıcı sorusunu URL title parametresi haline getir
-    encoded_title = urllib.parse.quote(query)
+    # Kullanıcı sorgusundan anahtar kelime çıkar
+    search_keyword = extract_search_keywords(query)
+    
+    if search_keyword:
+        print(f"   🔑 Anahtar kelime: '{search_keyword}'")
+    else:
+        print(f"   🔑 Genel arama (tüm haberler)")
 
-    # API-like endpoint (bu çalışıyor)
+    # URL encode
+    encoded_title = urllib.parse.quote(search_keyword)
+
+    # API-like endpoint
     base_url = "https://www.cozumkoleji.com.tr/icerik/duyurular/liste"
     url = f"{base_url}?title={encoded_title}&year="
 
@@ -188,8 +239,8 @@ def news_search_node(state: ChatState) -> ChatState:
         state["retrieved_context"] = f"Scraper error: {data['error']}"
         return state
 
-    # Eğer sonuç yoksa FALLBACK: Genel sorgu (tüm haberler)
-    if len(data) == 0:
+    # Eğer sonuç yoksa ve spesifik anahtar kelime kullanıldıysa FALLBACK: Genel sorgu
+    if len(data) == 0 and search_keyword:
         print("   ⚠️  Spesifik sonuç yok, tüm haberler çekiliyor...")
         fallback_url = f"{base_url}?title=&year="
         data = scrape_news_list(fallback_url)
