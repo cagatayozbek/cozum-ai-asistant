@@ -35,6 +35,23 @@ with st.sidebar:
         help="Birden fazla kademe seçebilirsiniz"
     )
     
+    st.divider()
+    
+    # 🆕 Context Compression Toggle (A/B Test)
+    st.subheader("🧪 Deney Modu")
+    compress_enabled = st.checkbox(
+        "Context Compression",
+        value=True,
+        help="ON: Dokümanlar sıkıştırılır (60-70% daha az token)\nOFF: Tam dokümanlar kullanılır (daha uzun cevaplar)"
+    )
+    
+    # Compression değişikliği kontrolü
+    if st.session_state.chat_session and compress_enabled != st.session_state.chat_session.compress_context:
+        st.session_state.chat_session.compress_context = compress_enabled
+        st.info(f"🗜️  Compression: {'ON' if compress_enabled else 'OFF'}")
+    
+    st.divider()
+    
     # Kademe değişikliği kontrolü
     if selected_levels != st.session_state.levels and selected_levels:
         st.session_state.levels = selected_levels
@@ -46,7 +63,8 @@ with st.sidebar:
             
             st.session_state.chat_session = ChatSession(
                 st.session_state.llm, 
-                st.session_state.checkpointer
+                st.session_state.checkpointer,
+                compress_context=compress_enabled  # Kullanıcı seçimine göre
             )
             st.session_state.chat_session.set_levels(selected_levels)
             st.session_state.onboarding_done = True

@@ -3,85 +3,56 @@ Output Format - Yanıt Format Şablonları
 Agent'in yanıtlarını nasıl formatlaması gerektiğini tanımlar
 """
 
-OUTPUT_FORMAT = """ÇIKTI FORMAT KURALLARI:
-
-**Markdown Desteği:**
-- **Kalın**: Önemli başlıklar ve vurgular için
-- *İtalik*: Hafif vurgular için
-- Listeler: • veya - ile başlayan bullet points
-- Sayılı listeler: 1. 2. 3. şeklinde
-
-**Yapısal Düzen:**
-
-1. Selamlaşma Yanıtı:
-   ```
-   Merhaba! Ben Çözüm Koleji veli asistanıyım. Size nasıl yardımcı olabilirim?
-   ```
-
-2. Bilgi Yanıtı (Özet + Detay):
-   ```
-   **[ÖZET]**
-   Kısa 1-2 cümlelik özet
-
-   **[DETAY]**
-   Detaylı açıklama:
-   • Nokta 1
-   • Nokta 2
-   • Nokta 3
-   ```
-
-3. Liste Yanıtı:
-   ```
-   Anaokulumuzda şu etkinlikler yapılmaktadır:
-
-   • **Sanat Atölyeleri:** Resim, heykel, kolaj çalışmaları
-   • **Müzik Eğitimi:** Orff çalgıları, ritim çalışmaları
-   • **Spor Aktiviteleri:** Hareket oyunları, koordinasyon çalışmaları
-   ```
-
-4. Kademe Bazlı Yanıt:
-   ```
-   **Lise İngilizce Programı:**
-
-   Program detayları:
-   • Haftalık ders saati: 10 saat
-   • Kullanılan kaynak: Cambridge Advanced
-   • Öğretmenler: Native speaker + Türk öğretmen
-   ```
-
-5. Bilgi Yok Yanıtı:
-   ```
-   Üzgünüm, bu konuda dokümanlarımızda bilgi bulamadım. 
-   Detaylı bilgi için lütfen okul iletişim kanallarımızdan bizimle irtibata geçin.
-   ```
-
-6. Ücret Sorusu Yanıtı:
-   ```
-   Ücret bilgileri için lütfen okul iletişim kanallarımızdan bizimle irtibata geçin:
-   
-   📞 **Telefon:** [okul telefonu]
-   📧 **E-posta:** [okul email]
-   🌐 **Website:** [okul website]
-   ```
-
-**Emoji Kullanımı (Sınırlı):**
-- ✅ Onay işaretleri
-- 📞 📧 🌐 İletişim bilgilerinde
-- 🎓 Eğitim konularında (isteğe bağlı)
-- ❌ Aşırı emoji kullanmayın
-
-**YAPMAYIN:**
-- Çok uzun paragraflar (max 3-4 cümle)
-- Gereksiz tekrarlar
-- Aşırı teknik jargon
-- İngilizce kelimeler (zorunlu değilse)
-- HTML/XML formatı
+OUTPUT_FORMAT = """FORMAT:
+- Markdown kullan: **kalın**, *italik*, bullet points
+- Kısa paragraflar (max 3-4 cümle)
+- Liste şeklinde detay ver
+- Detay vermekten çekinme
 """
 
 
 def get_output_format() -> str:
     """Output format kurallarını döndürür."""
     return OUTPUT_FORMAT
+
+
+def build_minimal_system_prompt(
+    role_prompt: str,
+    style_guide: str,
+    context_rules: str,
+    output_format: str,
+    active_levels: str
+) -> str:
+    """
+    Minimal system prompt (CONTEXT OLMADAN) - Multi-turn conversation için.
+    
+    Context ayrı bir SystemMessage olarak son mesajdan önce eklenir.
+    Bu sayede eski soruların context'i conversation history'de görünmez.
+    
+    Args:
+        role_prompt: Rol tanımı
+        style_guide: Üslup kuralları
+        context_rules: Bağlam kuralları
+        output_format: Çıktı formatı
+        active_levels: Aktif eğitim kademeleri
+    
+    Returns:
+        Context OLMADAN system prompt
+    """
+    return f"""{role_prompt}
+
+{context_rules}
+
+{style_guide}
+
+{output_format}
+
+**Aktif Kademeler:** {active_levels}
+
+🚨 KRİTİK: Sohbet geçmişini GÖREBİLİRSİNİZ ama SADECE EN SON KULLANICI SORUSUNU yanıtlayın!
+- Eski soruları ASLA tekrar yanıtlamayın
+- Sadece son mesaja odaklanın
+- Bağlam SADECE son soru içindir"""
 
 
 def build_answer_prompt(
@@ -93,7 +64,7 @@ def build_answer_prompt(
     context: str
 ) -> str:
     """
-    Final answer için tüm promptları birleştirir.
+    Final answer için tüm promptları birleştirir - ULTRA KOMpakt versiyon.
     
     Args:
         role_prompt: Rol tanımı
@@ -108,20 +79,14 @@ def build_answer_prompt(
     """
     return f"""{role_prompt}
 
-{style_guide}
-
 {context_rules}
 
-{output_format}
+{style_guide}
 
----
+**Aktif Kademeler:** {active_levels}
 
-**AKTİF KADEMELER:** {active_levels}
-
-**BAĞLAM (Dokümanlar):**
+**Bağlam:**
 {context}
 
----
-
-Yukarıdaki kurallara göre kullanıcının sorusunu yanıtlayın.
+⚠️ SADECE EN SON KULLANICI SORUSUNU YANITLA (önceki soruları tekrarlama)
 """

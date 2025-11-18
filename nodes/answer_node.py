@@ -5,12 +5,12 @@ Final yanıtı oluşturur (LLM ile)
 
 from state_schema import ChatState
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 from prompts.role_prompt import get_role_prompt
 from prompts.style_guide import get_style_guide
 from prompts.context_rules import get_context_rules
-from prompts.output_format import get_output_format, build_answer_prompt
+from prompts.output_format import get_output_format, build_minimal_system_prompt
 
 
 def answer_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> ChatState:
@@ -62,26 +62,38 @@ Kayıt ve ücret konusundaki tüm detayları size aktaracaklardır."""
     # Education/Event intents - LLM ile yanıt oluştur
     active_levels_str = ", ".join(active_levels).title() if active_levels else "Tüm kademeler"
     
-    # Build comprehensive prompt
-    system_prompt = build_answer_prompt(
+    # Build minimal system prompt (context OLMADAN - multi-turn için)
+    minimal_system_prompt = build_minimal_system_prompt(
         role_prompt=get_role_prompt(),
         style_guide=get_style_guide(),
         context_rules=get_context_rules(),
         output_format=get_output_format(),
-        active_levels=active_levels_str,
-        context=context
+        active_levels=active_levels_str
     )
     
     # Get conversation history (sliding window)
     messages = state.get("messages", [])
     recent_messages = messages[-10:] if len(messages) > 10 else messages  # Last 10 messages
     
-    # Build messages for LLM
-    llm_messages = [SystemMessage(content=system_prompt)]
-    llm_messages.extend(recent_messages)
-    llm_messages.append(HumanMessage(content=query))
+    # Build messages for LLM - Context'i SON mesajdan ÖNCE ekle!
+    # Bu sayede context SADECE son soruyla ilişkilendirilir
+    if len(recent_messages) > 0:
+        last_human_message = recent_messages[-1]
+        conversation_history = recent_messages[:-1]
+    else:
+        last_human_message = HumanMessage(content=query)
+        conversation_history = []
     
-    print(f"   📝 LLM'e gönderilen mesaj sayısı: {len(llm_messages)} (sliding window)")
+    llm_messages = [
+        SystemMessage(content=minimal_system_prompt),      # Rol & kurallar (context YOK!)
+        *conversation_history,                             # Eski conversation (context'ler YOK!)
+        AIMessage(content=f"""İşte sorunuzla ilgili bulduğum bilgiler:
+
+{context}"""),  # ← Context: Assistant'ın referans bilgisi (LangChain pattern)
+        last_human_message                                 # Kullanıcının son sorusu
+    ]
+    
+    print(f"   📝 LLM'e gönderilen mesaj sayısı: {len(llm_messages)} (sliding window + context injection)")
     
     # Generate answer
     response = llm.invoke(llm_messages)

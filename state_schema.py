@@ -29,6 +29,9 @@ class ChatState(TypedDict):
     # Active education levels
     active_levels: List[str]  # ["anaokulu", "ilkokul", "ortaokul", "lise"]
     
+    # Context compression control
+    compress_context: bool  # True = compress retrieved context, False = use full context
+    
     # Retrieved context from FAISS/tools
     retrieved_context: Optional[str]
     
@@ -42,7 +45,8 @@ class ChatState(TypedDict):
 def create_initial_state(
     user_query: str,
     active_levels: List[str],
-    messages: List[BaseMessage]
+    messages: List[BaseMessage],
+    compress_context: bool = True  # Default: compress ON
 ) -> ChatState:
     """
     Yeni conversation için initial state oluşturur.
@@ -51,6 +55,7 @@ def create_initial_state(
         user_query: Kullanıcının sorusu
         active_levels: Seçili eğitim kademeleri
         messages: Conversation history (LangChain messages)
+        compress_context: Context compression açık mı? (True = compress, False = full)
     
     Returns:
         ChatState: Initial state
@@ -62,6 +67,7 @@ def create_initial_state(
         intent_confidence=None,
         intent_reasoning=None,
         active_levels=active_levels,
+        compress_context=compress_context,
         retrieved_context=None,
         final_answer=None,
         error=None

@@ -63,11 +63,12 @@ class ChatSession:
     - Tool dispatch belirsizliği
     """
     
-    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None):
+    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None, compress_context: bool = True):
         self.llm = llm
         self.checkpointer = checkpointer or InMemorySaver()
         self.levels = None  # Seçili eğitim kademeleri
         self.thread_id = "default"
+        self.compress_context = compress_context  # Context compression control (A/B test için)
         
         # LangGraph workflow oluştur
         self.workflow = create_workflow(self.llm, self.checkpointer)
@@ -129,7 +130,8 @@ class ChatSession:
             initial_state = create_initial_state(
                 user_query=user_query,
                 active_levels=active_levels,
-                messages=messages
+                messages=messages,
+                compress_context=self.compress_context  # A/B test için
             )
             
             print(f"\n" + "="*80)
@@ -137,6 +139,7 @@ class ChatSession:
             print(f"   Thread ID: {self.thread_id}")
             print(f"   Aktif kademeler: {active_levels}")
             print(f"   Mesaj geçmişi: {len(messages)} mesaj")
+            print(f"   🗜️  Context Compression: {'ON' if self.compress_context else 'OFF'}")
             print("="*80)
             
             # Invoke workflow

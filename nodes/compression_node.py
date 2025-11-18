@@ -100,42 +100,48 @@ def semantic_reduce_context(context: str, max_chunks: int = 3) -> str:
 
 def context_compression_node(state: ChatState) -> ChatState:
     """
-    Context compression node - retrieved context'i sıkıştırır.
+    Retrieved context'i sıkıştırır - token kullanımını azaltır.
     
-    Token Reduction Strategy:
-    1. Her chunk'tan maksimum 3 cümle tut
-    2. Maksimum 3 chunk kullan
-    3. ~70% token reduction (2000 token → 600 token)
+    ⚠️ COMPRESSION CONTROL:
+    - state["compress_context"] = True → Compress (default)
+    - state["compress_context"] = False → Skip compression (A/B test için)
     
-    Args:
-        state: Current conversation state
+    Strategy:
+    1. Max 3 chunk al (en alakalı olanlar)
+    2. Her chunk'tan en önemli 2-3 cümle al
+    3. Gereksiz tekrarları temizle
     
-    Returns:
-        Updated state with compressed context
+    Target: 60-70% token reduction
     """
-    original_context = state.get("retrieved_context", "")
+    context = state.get("retrieved_context", "")
     
-    if not original_context or "Bilgi bulunamadı" in original_context:
-        print(f"\n🗜️  [COMPRESSION NODE] Context yok, compression skip")
+    if not context:
         return state
     
-    # Original stats
-    original_words = len(original_context.split())
-    original_chars = len(original_context)
+    # 🎛️ COMPRESSION SWITCH - A/B test için
+    if not state.get("compress_context", True):
+        print("🔓 [COMPRESSION NODE] SKIP: compress_context=False (full context mode)")
+        return state
     
-    print(f"\n🗜️  [COMPRESSION NODE] Context sıkıştırılıyor...")
-    print(f"   Orijinal: {original_words} kelime, {original_chars} karakter")
+    print(f"🗜️  [COMPRESSION NODE] Context sıkıştırılıyor...")
     
-    # Compress
-    compressed_context = semantic_reduce_context(original_context, max_chunks=3)
+    # Orijinal metrikleri hesapla
+    original_words = len(context.split())
+    original_chars = len(context)
     
-    # New stats
+    # Sıkıştır
+    compressed_context = semantic_reduce_context(context, max_chunks=3)
+    
+    # Yeni metrikleri hesapla
     compressed_words = len(compressed_context.split())
     compressed_chars = len(compressed_context)
-    reduction_pct = ((original_chars - compressed_chars) / original_chars * 100) if original_chars > 0 else 0
     
+    # Reduction oranı
+    word_reduction = ((original_words - compressed_words) / original_words * 100) if original_words > 0 else 0
+    
+    print(f"   Orijinal: {original_words} kelime, {original_chars} karakter")
     print(f"   Sıkıştırılmış: {compressed_words} kelime, {compressed_chars} karakter")
-    print(f"   📉 Reduction: {reduction_pct:.1f}%")
+    print(f"   📉 Reduction: {word_reduction:.1f}%")
     
     # Update state
     state["retrieved_context"] = compressed_context
