@@ -1,6 +1,6 @@
 import streamlit as st
 from chat import ChatSession, initialize_chat_model
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
 # Sayfa konfigürasyonu
 st.set_page_config(
@@ -35,6 +35,23 @@ with st.sidebar:
         help="Birden fazla kademe seçebilirsiniz"
     )
     
+    st.divider()
+    
+    # 🆕 Context Compression Toggle (A/B Test)
+    st.subheader("🧪 Deney Modu")
+    compress_enabled = st.checkbox(
+        "Context Compression",
+        value=True,
+        help="ON: Dokümanlar sıkıştırılır (60-70% daha az token)\nOFF: Tam dokümanlar kullanılır (daha uzun cevaplar)"
+    )
+    
+    # Compression değişikliği kontrolü
+    if st.session_state.chat_session and compress_enabled != st.session_state.chat_session.compress_context:
+        st.session_state.chat_session.compress_context = compress_enabled
+        st.info(f"🗜️  Compression: {'ON' if compress_enabled else 'OFF'}")
+    
+    st.divider()
+    
     # Kademe değişikliği kontrolü
     if selected_levels != st.session_state.levels and selected_levels:
         st.session_state.levels = selected_levels
@@ -42,36 +59,42 @@ with st.sidebar:
             # İlk başlatma - LLM ve checkpointer oluştur
             if st.session_state.llm is None:
                 st.session_state.llm = initialize_chat_model()
-                st.session_state.checkpointer = MemorySaver()
+                st.session_state.checkpointer = InMemorySaver()
             
             st.session_state.chat_session = ChatSession(
                 st.session_state.llm, 
-                st.session_state.checkpointer
+                st.session_state.checkpointer,
+                compress_context=compress_enabled  # Kullanıcı seçimine göre
             )
             st.session_state.chat_session.set_levels(selected_levels)
             st.session_state.onboarding_done = True
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": f"✨ Merhaba! {', '.join(selected_levels).title()} kademesi hakkında size yardımcı olabilirim. Sorularınızı sorabilirsiniz."
-            })
+            # ❌ Onboarding mesajı kaldırıldı - kullanıcı direkt soru sorsun
         else:
             # Kademe değişikliği
+            old_levels = st.session_state.chat_session.levels
             st.session_state.chat_session.set_levels(selected_levels)
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": f"✅ Kademe güncellendi: {', '.join(selected_levels).title()}"
-            })
+            
+            # Kademe değişikliği bilgilendirmesi (isteğe bağlı)
+            if old_levels != selected_levels:
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": f"✅ Kademe güncellendi: {', '.join(selected_levels).title()}"
+                })
         st.rerun()
     
     st.divider()
     
     # Yeni sohbet butonu
     if st.button("🔄 Yeni Sohbet", use_container_width=True):
-        st.session_state.chat_session = None
+        # Checkpointer'ı temizle (yeni thread ID)
+        if st.session_state.chat_session:
+            st.session_state.chat_session.clear_history()
+        
+        # UI state'i sıfırla
         st.session_state.messages = []
-        st.session_state.levels = []
-        st.session_state.onboarding_done = False
-        # LLM ve checkpointer'ı koru, sadece session'ı sıfırla
+        st.session_state.onboarding_done = False if not st.session_state.levels else True
+        
+        # NOT: chat_session ve levels'ı KORUYORUZ (kullanıcı aynı kademe ile devam edebilir)
         st.rerun()
     
     st.divider()
@@ -82,17 +105,24 @@ if not st.session_state.onboarding_done:
     # Onboarding mesajı
     st.info("👈 Lütfen sol menüden en az bir kademe seçin.")
     st.markdown("""
-    ### Nasıl Kullanılır?
+    ### 🎓 Çözüm Koleji Veli Asistanı'na Hoş Geldiniz!
     
-    1. **Sol menüden** ilgilendiğiniz kademe(leri) seçin
-    2. **Soru sorun**: "Anaokulu programı nedir?", "Lise biyoloji kaç saat?"
-    3. **Sohbet edin**: Doğal bir şekilde sorularınızı sorun
+    #### Nasıl Kullanılır?
     
-    ### Örnek Sorular:
-    - Anaokulu programı nasıl?
-    - İlkokulda kaç saat İngilizce var?
-    - Lise ve ortaokul matematik saatlerini karşılaştır
-    - Hangi kademelerde robotik kodlama var?
+    1. **Kademe Seçin** 👈 Sol menüden ilgilendiğiniz kademe(leri) seçin
+    2. **Soru Sorun** 💬 Doğal bir şekilde sorularınızı yazın
+    3. **Cevap Alın** ✅ Yapay zeka asistanınız size yardımcı olacak
+    
+    #### 📝 Örnek Sorular:
+    - *"Anaokulu programı nasıl?"*
+    - *"İlkokulda kaç saat İngilizce var?"*
+    - *"Lisede sınava hazırlık programı var mı?"*
+    - *"Spor faaliyetleri neler?"*
+    
+    #### 💡 İpuçları:
+    - Birden fazla kademe seçerek karşılaştırmalı bilgi alabilirsiniz
+    - Takip soruları sorabilirsiniz
+    - İstediğiniz zaman kademe değiştirebilirsiniz
     """)
 else:
     # Chat mesajlarını göster

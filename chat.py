@@ -1,28 +1,23 @@
+"""
+Refactored Chat Session - LangGraph Multi-Node Architecture
+Production-ready, modular, testable chatbot system
+"""
+
 import os
-from typing import Annotated, TypedDict, Literal
 from dotenv import load_dotenv
-from operator import add
+import traceback
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.checkpoint.memory import InMemorySaver
 
-from langgraph.graph import StateGraph, END, START
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.types import Command
+from workflow import create_workflow
+from state_schema import create_initial_state, ChatState
+from retriever import SUPPORTED_LEVELS
 
-from retriever import get_retrieved_documents, SUPPORTED_LEVELS
-
-import traceback
-import re
 # --- CONFIGURATION ---
-CHAT_MODEL = "gemini-2.5-flash"
+CHAT_MODEL = os.getenv("GEMINI_MODEL")
 
-# --- STATE SCHEMA (TypedDict for LangGraph) ---
-class ChatState(TypedDict):
-    """State for the chat graph."""
-    levels: list[str] | None
-    messages: Annotated[list[BaseMessage], add]  # add operator appends messages
-    context: str
 
 def initialize_chat_model() -> ChatGoogleGenerativeAI:
     """API anahtarını yükler ve sohbet modelini başlatır."""
@@ -34,8 +29,9 @@ def initialize_chat_model() -> ChatGoogleGenerativeAI:
     return ChatGoogleGenerativeAI(
         model=CHAT_MODEL,
         google_api_key=google_api_key,
-        temperature=0.4,  # Tutarlı ama doğal yanıtlar için (0.0=deterministik, 1.0=yaratıcı)
+        temperature=0.4,  # Tutarlı ama doğal yanıtlar için
     )
+
 
 def get_level_display_name(level: str) -> str:
     """Seviye kodunu kullanıcı dostu isme çevirir."""
@@ -47,260 +43,161 @@ def get_level_display_name(level: str) -> str:
     }
     return mapping.get(level, level)
 
-# --- TYPE DEFINITIONS ---
-QueryType = Literal["casual", "followup", "question"]
-
-# --- GRAPH NODES ---
-def classify_query_with_llm(llm: ChatGoogleGenerativeAI, user_msg: str) -> QueryType:
-    """LLM ile soru tipini sınıflandır - 2 kategori: casual, question."""
-    
-    classification_prompt = f"""Classify this message into ONE category:
-- casual: Selamlaşma, teşekkür, veda, kimlik sorusu (merhaba, teşekkürler, hoşçakal, sen kimsin)
-- question: Okul hakkında herhangi bir soru (retrieval gerekli)
-
-MESSAGE: "{user_msg}"
-
-KILAVUZ:
-→ Selamlaşma/teşekkür/veda/kimlik = casual
-→ Okul/eğitim hakkında herhangi bir soru = question
-
-EXAMPLES:
-"Merhaba" / "Teşekkürler" / "Sen kimsin?" → casual
-"Kaç saat?" → question
-"Ücret ne kadar?" → question
-"manevi eğitim var mı" → question
-"İngilizce eğitimi nasıl?" → question
-
-Return ONLY the category name:"""
-    
-    response = llm.invoke([HumanMessage(content=classification_prompt)])
-    classification = response.content.strip().lower()
-    
-    # Validate and fallback
-    valid_classes: list[QueryType] = ["casual", "question"]
-    if classification not in valid_classes:
-        classification = "question"  # Güvenli taraf: retrieval yap
-    
-    return classification
-
-def router_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> Command[Literal["retrieve", "llm"]]:
-    """Route to retrieval or direct LLM - Command pattern."""
-    messages = state.get("messages", [])
-    
-    if not messages:
-        return Command(update={"context": ""}, goto="llm")
-    
-    # Get last user message (current query)
-    last_user_msg = None
-    for msg in reversed(messages):
-        if isinstance(msg, HumanMessage):
-            last_user_msg = msg.content
-            break
-    
-    if not last_user_msg:
-        return Command(update={"context": ""}, goto="llm")
-    
-    # Classify query type (casual vs question)
-    query_type = classify_query_with_llm(llm, last_user_msg)
-    
-    # Casual conversation (selamlaşma, teşekkür, veda) - direkt LLM'e git
-    if query_type == "casual":
-        return Command(update={"context": ""}, goto="llm")
-    
-    # Question - retrieval gerekli
-    return Command(update={"context": "NEEDS_RETRIEVAL"}, goto="retrieve")
-
-def retrieve_node(state: ChatState) -> dict:
-    """Retrieve relevant documents based on last user message."""
-    # Check if retrieval is needed (router marks it)
-    if state.get("context") != "NEEDS_RETRIEVAL":
-        return {}  # Skip retrieval, keep existing context
-    
-    if not state.get("messages"):
-        return {"context": ""}
-    
-    # Get last user message
-    last_user_msg = None
-    for msg in reversed(state["messages"]):
-        if isinstance(msg, HumanMessage):
-            last_user_msg = msg.content
-            break
-    
-    if not last_user_msg or not state.get("levels"):
-        return {"context": ""}
-    
-    # Retrieve documents
-    retrieved_docs = get_retrieved_documents(
-        last_user_msg,
-        k=4,
-        levels=state.get("levels", []),
-        force_recreate=False,
-        silent=True
-    )
-    
-    # Format context
-    if not retrieved_docs:
-        context = "Bilgi bulunamadı."
-    else:
-        context_parts = []
-        for i, (doc, score) in enumerate(retrieved_docs, 1):
-            level = doc.metadata.get('level', 'N/A').upper()
-            title = doc.metadata.get('title', 'Başlık yok')
-            content = doc.metadata.get('original_content', doc.page_content)
-            context_parts.append(f"[{level}] {title}\n{content}")
-        context = "\n\n---\n\n".join(context_parts)
-    
-    # Return context to be used by LLM (store in state for next node)
-    # Don't add to messages, just pass it through state
-    return {"context": context}
-
-def llm_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> dict:
-    """Generate response using LLM with context and full conversation history."""
-    if not state.get("messages"):
-        return {}
-    
-    # Get context from state (set by retrieve_node)
-    context = state.get("context", "")
-    
-    # Build system prompt
-    level_info = ", ".join([get_level_display_name(l) for l in state.get("levels", [])]) if state.get("levels") else "Henüz seçilmedi"
-    
-    system_prompt = f"""Sen, Çözüm Eğitim Kurumları'nın veli asistanısınız.
-Seçili kademeler: {level_info}
-
-KILAVUZ:
-1) Yalnızca BAĞLAM'daki bilgileri kullanın; asla uydurma yapmayın.
-2) Resmi fakat samimi bir üslupla "siz" diye hitap edin.
-3) Yanıta kısa bir özetle başlayın; gerekirse maddeleyerek detay verin. 
-4) Takip sorularında önceki konuşma geçmişini kullanın ve sadece sorulan spesifik bilgiyi verin.
-5) BAĞLAM'da ilgili bilgi yoksa: "Üzgünüm, bu konuda size yardımcı olamıyorum." deyin ve veliyi okula yönlendirin.
-6) Ücretlerle ilgili soru geldiğinde fiyat vermeyin; "Ücret bilgisi için lütfen okulla iletişime geçin." şeklinde yönlendirin.
-7) Gereksiz tekrar ve dolgu cümlelerinden kaçının; mümkünse maddeleyin.
-
-
-ÖRNEKLER:
-Veli: "İngilizce eğitimi nasıl?"
-Asistan: "İlkokul (1-4): Cambridge programı — Haftalık: 12 saat Main Course, 2 saat Think&Talk. Dil Duşu yöntemiyle erken yaşta desteklenir."
-
-Veli: "Okul hakkında bilgi istiyorum"
-Asistan: "Okulumuz modern bir eğitim anlayışıyla öğrenci gelişimine odaklanır. Hangi konuda detay istersiniz? • Eğitim programları • İngilizce • Sosyal aktiviteler • Ücretler • Servis"
-
-Veli: "Merhaba"
-Asistan: "Merhaba! Ben Çözüm Eğitim Kurumları'nın veli asistanıyım. Size nasıl yardımcı olabilirim?"
-
-"""
-    
-    # Pass FULL conversation history + system prompt
-    # This allows LLM to see previous messages for follow-up questions
-    messages = [
-        SystemMessage(content=system_prompt),
-        *state["messages"]  # Include ALL previous messages (HumanMessage and AIMessage)
-    ]
-    
-    # Invoke LLM with complete conversation history
-    response = llm.invoke(messages)
-    
-    return {"messages": [AIMessage(content=response.content)]}
 
 class ChatSession:
-    """LangGraph-based chat session manager."""
+    """
+    Refactored Chat Session - LangGraph Multi-Node Architecture
     
-    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: MemorySaver):
+    ✨ YENİ ÖZELLİKLER:
+    - Intent-based deterministik routing
+    - Modüler prompt sistemi (role, style, context, output ayrı)
+    - LangGraph native memory management (checkpointer)
+    - Her node izole ve test edilebilir
+    - Sliding window memory (LangGraph manages)
+    - Production-ready error handling
+    
+    ❌ ESKİ SİSTEM (KALDIRILDI):
+    - create_agent (tool-based agent)
+    - self.conversation_history (manual memory)
+    - Double SystemMessage (çift prompt sorunu)
+    - Tool dispatch belirsizliği
+    """
+    
+    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None, compress_context: bool = True):
         self.llm = llm
-        self.checkpointer = checkpointer
-        self.graph = self._build_graph()
-        self.thread_id = "default"  # Can be changed for multi-user scenarios
-    
-    def _build_graph(self) -> StateGraph:
-        """Build the LangGraph workflow."""
-        # Create graph
-        workflow = StateGraph(ChatState)
+        self.checkpointer = checkpointer or InMemorySaver()
+        self.levels = None  # Seçili eğitim kademeleri
+        self.thread_id = "default"
+        self.compress_context = compress_context  # Context compression control (A/B test için)
         
-        # Add nodes - pass llm to router for classification
-        workflow.add_node("router", lambda state: router_node(state, self.llm))
-        workflow.add_node("retrieve", retrieve_node)
-        workflow.add_node("llm", lambda state: llm_node(state, self.llm))
-        
-        # Add edges - Command pattern handles routing automatically
-        workflow.add_edge(START, "router")
-        workflow.add_edge("retrieve", "llm")  # Retrieve sonrası LLM'e git
-        workflow.add_edge("llm", END)
-        
-        # Compile with checkpointer
-        return workflow.compile(checkpointer=self.checkpointer)
-    
-    def get_config(self):
-        """Get configuration with thread_id."""
-        return {"configurable": {"thread_id": self.thread_id}}
-    
-    def get_state(self) -> dict:
-        """Get current state as dict."""
-        state = self.graph.get_state(self.get_config())
-        if state and state.values:
-            # Ensure all keys have defaults
-            values = state.values
-            return {
-                "levels": values.get("levels"),
-                "messages": values.get("messages", []),
-                "context": values.get("context", "")
-            }
-        return {"levels": None, "messages": [], "context": ""}
-    
-    def clear_history(self):
-        """Clear conversation history by resetting thread."""
-        self.thread_id = f"thread_{os.urandom(8).hex()}"
+        # LangGraph workflow oluştur
+        self.workflow = create_workflow(self.llm, self.checkpointer)
     
     def set_levels(self, levels: list[str]):
-        """Set education levels in state."""
-        # Simply update state with new levels
-        self.graph.update_state(self.get_config(), {"levels": levels})
+        """
+        Eğitim kademelerini ayarla.
+        
+        Args:
+            levels: Seçili kademe listesi (örn: ["anaokulu", "lise"])
+        """
+        self.levels = levels
+        print(f"\n✅ Kademe güncellendi: {', '.join(levels)}")
+    
+    def clear_history(self):
+        """Sohbet geçmişini temizle - yeni thread ID oluştur."""
+        self.thread_id = f"thread_{os.urandom(8).hex()}"
+        print(f"\n🗑️  Sohbet geçmişi temizlendi (yeni thread: {self.thread_id})")
     
     def chat(self, user_query: str) -> str:
-        """Send user message and get response."""
+        """
+        Kullanıcı mesajını işle ve yanıt döndür.
+        
+        LangGraph Workflow:
+        1. Intent Detection → Query classify edilir
+        2. Router → Intent'e göre doğru node'a yönlendirilir
+        3. Retrieve/News/Price/Direct → Context hazırlanır
+        4. Answer → Final LLM yanıtı oluşturulur
+        
+        Memory:
+        - LangGraph checkpointer otomatik manage eder
+        - Sliding window (last 10 messages) answer_node içinde
+        - Thread-based conversation persistence
+        
+        Args:
+            user_query: Kullanıcının sorusu
+        
+        Returns:
+            Final answer string
+        """
         try:
-            # Simply invoke with the new message - let the graph handle state
-            # The 'add' operator will automatically append to existing messages
-            result = self.graph.invoke(
-                {"messages": [HumanMessage(content=user_query)]},
-                self.get_config()
+            # Active levels
+            active_levels = self.levels if self.levels else list(SUPPORTED_LEVELS)
+            
+            # Get conversation history from checkpointer
+            config = {"configurable": {"thread_id": self.thread_id}}
+            
+            # Get existing messages from checkpointer (if any)
+            try:
+                snapshot = self.workflow.get_state(config)
+                existing_messages = snapshot.values.get("messages", []) if snapshot else []
+            except:
+                existing_messages = []
+            
+            # Add new user message
+            messages = existing_messages + [HumanMessage(content=user_query)]
+            
+            # Create initial state
+            initial_state = create_initial_state(
+                user_query=user_query,
+                active_levels=active_levels,
+                messages=messages,
+                compress_context=self.compress_context  # A/B test için
             )
             
-            # Extract last AI message from result
-            if result and "messages" in result:
-                for msg in reversed(result["messages"]):
-                    if isinstance(msg, AIMessage):
-                        response = msg.content
-                        
-                        # Check for level change tags
-                        
-                        tag_pattern = r'#KADEME_EKLE:(\w+)#'
-                        matches = re.findall(tag_pattern, response)
-                        
-                        if matches:
-                            # Extract and add new levels
-                            current_state = self.get_state()
-                            current_levels = current_state.get("levels", [])
-                            
-                            for level_to_add in matches:
-                                level_to_add = level_to_add.lower()
-                                if level_to_add in SUPPORTED_LEVELS and level_to_add not in current_levels:
-                                    current_levels.append(level_to_add)
-                            
-                            # Update state with new levels
-                            if current_levels != current_state.get("levels", []):
-                                self.graph.update_state(self.get_config(), {"levels": current_levels})
-                            
-                            # Remove tags from response
-                            response = re.sub(tag_pattern, '', response).strip()
-                        
-                        return response
+            print(f"\n" + "="*80)
+            print(f"💬 [CHAT SESSION] Yeni soru işleniyor")
+            print(f"   Thread ID: {self.thread_id}")
+            print(f"   Aktif kademeler: {active_levels}")
+            print(f"   Mesaj geçmişi: {len(messages)} mesaj")
+            print(f"   🗜️  Context Compression: {'ON' if self.compress_context else 'OFF'}")
+            print("="*80)
             
-            return "Üzgünüm, bir yanıt üretemedim. Lütfen sorunuzu farklı şekilde sormayı deneyin."
+            # Invoke workflow
+            result = self.workflow.invoke(initial_state, config)
+            
+            # Extract final answer
+            final_answer = result.get("final_answer", "Üzgünüm, bir yanıt üretemedim.")
+            
+            print(f"\n✅ [CHAT SESSION] Yanıt hazır ({len(final_answer)} karakter)")
+            print("="*80 + "\n")
+            
+            return final_answer
+            
         except Exception as e:
-            # Log error but don't expose details to user
-            
+            print(f"\n❌ [CHAT SESSION] Hata oluştu:")
             traceback.print_exc()
             return "Üzgünüm, teknik bir sorun oluştu. Lütfen tekrar deneyin."
 
-# CLI için main() fonksiyonu kaldırıldı
-# Production'da Streamlit (app.py) kullanılıyor
+
+# Test
+if __name__ == "__main__":
+    """
+    Test senaryoları:
+    1. Greeting
+    2. Education (FAISS retrieval)
+    3. Price (contact info)
+    4. Unknown (fallback)
+    """
+    print("🤖 Refactored Chat Session Test\n")
+    
+    llm = initialize_chat_model()
+    session = ChatSession(llm)
+    
+    # Test 1: Greeting
+    print("\n" + "🟢 TEST 1: GREETING".center(80, "="))
+    session.set_levels(["anaokulu"])
+    response1 = session.chat("Merhaba")
+    print(f"\n📝 Yanıt:\n{response1}\n")
+    
+    # Test 2: Education
+    print("\n" + "🟢 TEST 2: EDUCATION (FAISS)".center(80, "="))
+    response2 = session.chat("Anaokulunda İngilizce eğitimi nasıl?")
+    print(f"\n📝 Yanıt:\n{response2}\n")
+    
+    # Test 3: Price
+    print("\n" + "🟢 TEST 3: PRICE".center(80, "="))
+    response3 = session.chat("Ücretler ne kadar?")
+    print(f"\n📝 Yanıt:\n{response3}\n")
+    
+    # Test 4: Unknown
+    print("\n" + "🟢 TEST 4: UNKNOWN".center(80, "="))
+    response4 = session.chat("Hava durumu nasıl?")
+    print(f"\n📝 Yanıt:\n{response4}\n")
+    
+    # Test 5: Level change
+    print("\n" + "🟢 TEST 5: LEVEL CHANGE".center(80, "="))
+    session.set_levels(["lise"])
+    response5 = session.chat("İngilizce eğitimi nasıl?")
+    print(f"\n📝 Yanıt:\n{response5}\n")
+    
+    print("\n" + "✅ TÜM TESTLER TAMAMLANDI".center(80, "=") + "\n")
