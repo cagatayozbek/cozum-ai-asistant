@@ -16,9 +16,6 @@ from state_schema import create_initial_state, ChatState
 from retriever import SUPPORTED_LEVELS
 
 # --- CONFIGURATION ---
-CHAT_MODEL = os.getenv("GEMINI_MODEL")
-
-
 def initialize_chat_model() -> ChatGoogleGenerativeAI:
     """API anahtarını yükler ve sohbet modelini başlatır."""
     load_dotenv()
@@ -26,8 +23,11 @@ def initialize_chat_model() -> ChatGoogleGenerativeAI:
     if not google_api_key:
         raise ValueError("GOOGLE_API_KEY ortam değişkeni bulunamadı. .env dosyasını kontrol edin.")
     
+    # Model selection: env var or fallback to default
+    model_name = os.getenv("GEMINI_MODEL")
+    
     return ChatGoogleGenerativeAI(
-        model=CHAT_MODEL,
+        model=model_name,
         google_api_key=google_api_key,
         temperature=0.4,  # Tutarlı ama doğal yanıtlar için
     )
@@ -63,12 +63,12 @@ class ChatSession:
     - Tool dispatch belirsizliği
     """
     
-    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None, compress_context: bool = True):
+    def __init__(self, llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = None, compress_context: bool = False):
         self.llm = llm
         self.checkpointer = checkpointer or InMemorySaver()
         self.levels = None  # Seçili eğitim kademeleri
         self.thread_id = "default"
-        self.compress_context = compress_context  # Context compression control (A/B test için)
+        self.compress_context = compress_context  # Context compression control (A/B test için - DEFAULT: OFF)
         
         # LangGraph workflow oluştur
         self.workflow = create_workflow(self.llm, self.checkpointer)

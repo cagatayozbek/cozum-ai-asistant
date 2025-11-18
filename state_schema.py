@@ -46,7 +46,7 @@ def create_initial_state(
     user_query: str,
     active_levels: List[str],
     messages: List[BaseMessage],
-    compress_context: bool = True  # Default: compress ON
+    compress_context: bool = False  # Default: compress OFF (full context for quality)
 ) -> ChatState:
     """
     Yeni conversation için initial state oluşturur.

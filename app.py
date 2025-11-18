@@ -41,7 +41,7 @@ with st.sidebar:
     st.subheader("🧪 Deney Modu")
     compress_enabled = st.checkbox(
         "Context Compression",
-        value=True,
+        value=False,  # Default: OFF (full context for better quality)
         help="ON: Dokümanlar sıkıştırılır (60-70% daha az token)\nOFF: Tam dokümanlar kullanılır (daha uzun cevaplar)"
     )
     
