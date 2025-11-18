@@ -8,6 +8,10 @@ OUTPUT_FORMAT = """FORMAT:
 - Kısa paragraflar (max 3-4 cümle)
 - Liste şeklinde detay ver
 - Detay vermekten çekinme
+- **ÖNEMLİ:** Etkinlik/haber cevaplarında:
+  * Görseller varsa ![alt](url) formatında MUTLAKA ekle
+  * Kaynak linkleri [metin](url) formatında MUTLAKA ekle
+  * Bu bilgileri ATLAMAYIN - kullanıcıya gösterin!
 """
 
 

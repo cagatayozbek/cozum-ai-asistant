@@ -11,6 +11,50 @@ from prompts.role_prompt import get_role_prompt
 from prompts.style_guide import get_style_guide
 from prompts.context_rules import get_context_rules
 from prompts.output_format import get_output_format, build_minimal_system_prompt
+import json
+
+
+def format_news_context(context: str) -> str:
+    """
+    Event intent için context'i Markdown formatında düzenle.
+    Görseller ve kaynak linklerini ekle.
+    
+    Args:
+        context: JSON string (news_search_node'dan gelen)
+    
+    Returns:
+        Markdown formatında düzenlenmiş context
+    """
+    try:
+        news_items = json.loads(context)
+        
+        formatted = "**DUYURULAR VE ETKİNLİKLER:**\n\n"
+        
+        for i, item in enumerate(news_items, 1):
+            formatted += f"### {i}. {item['title']}\n\n"
+            
+            # Görsel varsa ekle
+            if item.get('image'):
+                formatted += f"![{item['title']}]({item['image']})\n\n"
+            
+            # İçerik
+            content = item.get('content') or item.get('summary', '')
+            if content:
+                formatted += f"{content}\n\n"
+            
+            # Tarih ve kaynak
+            formatted += f"📅 **Tarih:** {item.get('date', 'Tarih belirtilmemiş')}\n"
+            
+            if item.get('url'):
+                formatted += f"🔗 **Kaynak:** [{item['url']}]({item['url']})\n"
+            
+            formatted += "\n---\n\n"
+        
+        return formatted
+        
+    except json.JSONDecodeError:
+        # JSON değilse olduğu gibi dön
+        return context
 
 
 def answer_node(state: ChatState, llm: ChatGoogleGenerativeAI) -> ChatState:
@@ -84,13 +128,33 @@ Kayıt ve ücret konusundaki tüm detayları size aktaracaklardır."""
         last_human_message = HumanMessage(content=query)
         conversation_history = []
     
+    # Eski context mesajlarını filtrele (clean conversation history)
+    # Context injection için kullanılan "İşte sorunuzla ilgili bulduğum bilgiler:" mesajlarını çıkar
+    filtered_history = []
+    for msg in conversation_history:
+        # AIMessage içinde context injection varsa atla
+        if isinstance(msg, AIMessage) and "İşte sorunuzla ilgili bulduğum bilgiler:" in msg.content:
+            continue
+        # HumanMessage içinde context varsa atla (eski yöntem için backward compatibility)
+        if isinstance(msg, HumanMessage) and "### BAĞLAM:" in msg.content:
+            continue
+        filtered_history.append(msg)
+    
+    # Event intent için context'i format'la (görseller + kaynaklar ekle)
+    if intent == "event":
+        formatted_context = format_news_context(context)
+    else:
+        formatted_context = context
+    
+    # Context'i HumanMessage olarak ekle (daha doğal flow)
     llm_messages = [
         SystemMessage(content=minimal_system_prompt),      # Rol & kurallar (context YOK!)
-        *conversation_history,                             # Eski conversation (context'ler YOK!)
-        AIMessage(content=f"""İşte sorunuzla ilgili bulduğum bilgiler:
+        *filtered_history,                                 # Temiz conversation history (context'siz)
+        HumanMessage(content=f"""### BAĞLAM:
+{formatted_context}
 
-{context}"""),  # ← Context: Assistant'ın referans bilgisi (LangChain pattern)
-        last_human_message                                 # Kullanıcının son sorusu
+### SORU:
+{query}"""),  # ← Context + Soru birlikte (HumanMessage olarak)
     ]
     
     print(f"   📝 LLM'e gönderilen mesaj sayısı: {len(llm_messages)} (sliding window + context injection)")

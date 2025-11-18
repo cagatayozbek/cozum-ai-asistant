@@ -42,12 +42,14 @@ INTENT_DETECTION_PROMPT = """Sen bir intent sınıflandırıcısısın. Kullanı
    - "Ders saatleri nedir?"
    - "Anaokulunda hangi etkinlikler var?"
 
-3. **event** - Güncel haberler, etkinlikler, duyurular, takvim
+3. **event** - Güncel haberler, etkinlikler, duyurular, takvim, "düzenlenen/yapılan" etkinlikler
    Örnekler:
    - "Bu hafta etkinlik var mı?"
    - "Son haberler neler?"
    - "Yaklaşan etkinlikler?"
    - "Okul tatili ne zaman?"
+   - "Okulda hangi etkinlikler düzenlendi?"
+   - "Geçen ay ne gibi etkinlikler oldu?"
 
 4. **price** - Ücret, fiyat, kayıt, finansal sorular
 
@@ -58,9 +60,10 @@ INTENT_DETECTION_PROMPT = """Sen bir intent sınıflandırıcısısın. Kullanı
    - Anlaşılamayan veya çok belirsiz sorular
 
 **KURALLAR:**
-- Eğitimle ilgili her şey → **education**
-- Fiyat/ücret kelimeleri görürsen → **price**
-- Etkinlik/haber/duyuru → **event**
+- Eğitim programı, ders, aktivite tanımı → **education**
+- **DİKKAT:** "Düzenlenen/yapılan/geçmiş etkinlikler" → **event** (haber arar)
+- Fiyat/ücret kelimeleri → **price**
+- Güncel haber/duyuru/takvim → **event**
 - Merhaba/teşekkür → **greeting**
 - Emin değilsen → **unknown**
 

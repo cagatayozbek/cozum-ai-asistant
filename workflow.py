@@ -12,10 +12,11 @@ from nodes.intent_node import intent_detection_node
 from nodes.router_node import router_node
 from nodes.retrieve_node import retrieve_node
 from nodes.compression_node import context_compression_node
+from nodes.news_scraper import news_search_node  # 🆕 Gerçek scraper
 from nodes.answer_node import (
     answer_node, 
     direct_answer_node, 
-    search_news_node, 
+    # search_news_node,  # 🗑️ Placeholder kaldırıldı
     price_info_node
 )
 
@@ -45,22 +46,22 @@ def create_workflow(llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = N
         Compiled StateGraph
     """
     # Create StateGraph
-    workflow = StateGraph(ChatState)
+    graph = StateGraph(ChatState)
     
     # Add nodes
-    workflow.add_node("intent_detection", lambda state: intent_detection_node(state, llm))
-    workflow.add_node("retrieve", retrieve_node)
-    workflow.add_node("search_news", search_news_node)
-    workflow.add_node("price_info", price_info_node)
-    workflow.add_node("compression", context_compression_node)  # 🆕 Context compression
-    workflow.add_node("direct_answer", lambda state: direct_answer_node(state, llm))
-    workflow.add_node("answer", lambda state: answer_node(state, llm))
+    graph.add_node("intent_detection", lambda state: intent_detection_node(state, llm))
+    graph.add_node("retrieve", retrieve_node)
+    graph.add_node("search_news", news_search_node)
+    graph.add_node("price_info", price_info_node)
+    graph.add_node("compression", context_compression_node)  # 🆕 Context compression
+    graph.add_node("direct_answer", lambda state: direct_answer_node(state, llm))
+    graph.add_node("answer", lambda state: answer_node(state, llm))
     
     # Set entry point
-    workflow.set_entry_point("intent_detection")
+    graph.set_entry_point("intent_detection")
     
     # Add conditional routing after intent detection
-    workflow.add_conditional_edges(
+    graph.add_conditional_edges(
         "intent_detection",
         router_node,
         {
@@ -72,21 +73,21 @@ def create_workflow(llm: ChatGoogleGenerativeAI, checkpointer: InMemorySaver = N
     )
     
     # All nodes go to compression first (except direct_answer)
-    workflow.add_edge("retrieve", "compression")
-    workflow.add_edge("search_news", "compression")
-    workflow.add_edge("price_info", "compression")
+    graph.add_edge("retrieve", "compression")
+    graph.add_edge("search_news", "compression")
+    graph.add_edge("price_info", "compression")
     
     # Compression goes to answer
-    workflow.add_edge("compression", "answer")
+    graph.add_edge("compression", "answer")
     
     # Direct answer bypasses compression
-    workflow.add_edge("direct_answer", END)  # Direct answer goes to END
+    graph.add_edge("direct_answer", END)  # Direct answer goes to END
     
     # Answer node goes to END
-    workflow.add_edge("answer", END)
+    graph.add_edge("answer", END)
     
     # Compile
-    app = workflow.compile(checkpointer=checkpointer)
+    app = graph.compile(checkpointer=checkpointer)
     
     return app
 
