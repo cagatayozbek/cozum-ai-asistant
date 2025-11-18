@@ -50,11 +50,6 @@ INTENT_DETECTION_PROMPT = """Sen bir intent sınıflandırıcısısın. Kullanı
    - "Okul tatili ne zaman?"
 
 4. **price** - Ücret, fiyat, kayıt, finansal sorular
-   Örnekler:
-   - "Ücretler ne kadar?"
-   - "Kayıt ücreti nedir?"
-   - "Ödeme planı var mı?"
-   - "Burs imkanı var mı?"
 
 5. **unknown** - Yukarıdaki kategorilere uymayan, belirsiz veya okul dışı sorular
    Örnekler:

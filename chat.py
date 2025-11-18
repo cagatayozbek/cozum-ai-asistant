@@ -16,7 +16,7 @@ from state_schema import create_initial_state, ChatState
 from retriever import SUPPORTED_LEVELS
 
 # --- CONFIGURATION ---
-CHAT_MODEL = "gemini-2.5-flash"
+CHAT_MODEL = os.getenv("GEMINI_MODEL")
 
 
 def initialize_chat_model() -> ChatGoogleGenerativeAI:
